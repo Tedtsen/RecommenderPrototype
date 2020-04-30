@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="6dp">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/gridFoodImage"
+                android:layout_width="128dp"
+                android:layout_height="0dp"
+                android:scaleType="fitXY"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/fried_chicken" />
+
+            <TextView
+                android:id="@+id/gridFoodName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name"
+                android:textAlignment="center"
+                android:textSize="32sp"
+                app:layout_constraintTop_toTopOf="parent"
+                android:paddingStart="16dp"
+                app:layout_constraintStart_toEndOf="@id/gridFoodImage" />
+
+            <TextView
+                android:id="@+id/gridFoodPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Price"
+                android:textAlignment="center"
+                android:textSize="26sp"
+                android:paddingStart="24dp"
+                app:layout_constraintStart_toEndOf="@id/gridFoodImage"
+                app:layout_constraintTop_toBottomOf="@id/gridFoodName" />
+
+            <TextView
+                android:id="@+id/gridFoodRestaurant"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Restaurant"
+                android:textAlignment="center"
+                android:textSize="26sp"
+                android:paddingStart="24dp"
+                app:layout_constraintStart_toEndOf="@id/gridFoodImage"
+                app:layout_constraintTop_toBottomOf="@id/gridFoodPrice" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
