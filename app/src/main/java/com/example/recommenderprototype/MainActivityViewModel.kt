@@ -10,6 +10,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 class MainActivityViewModel : ViewModel() {
     val mLiveData = MutableLiveData<ArrayList<ArrayList<Food>>>()
@@ -25,9 +27,11 @@ class MainActivityViewModel : ViewModel() {
             //Firestore database read function
             odb.collection("food_test").get()
                 .addOnSuccessListener { results ->
+                    var index = 0
                     for (document in results) {
                         //need to declr docObj here?
-                        menu.add(document.toObject(Food::class.java))
+                        menu.add(index, document.toObject(Food::class.java))
+                        menu[index].menu_id = document.id
                     }
 
                     //Create different categories of menus
@@ -40,7 +44,7 @@ class MainActivityViewModel : ViewModel() {
                     val currentUser = auth.currentUser
                     if (currentUser != null){
                         //If logged in, do recommendation algorithm, do other menus nonetheless
-                        val docRef = odb.collection("user").document(FirebaseAuth.getInstance().currentUser!!.email!!)
+                        val docRef = odb.collection("user").document(currentUser.email!!)
                         val user = User()
                         docRef.get().addOnSuccessListener { document ->
                             if (document.exists()){
@@ -104,10 +108,49 @@ class MainActivityViewModel : ViewModel() {
                                 }
 
                                 // //Collab - Filter
+                                //Firestore database read user-item matrix
+                                /*var userItemMatrix = mutableListOf<MutableList<Float>>()
+                                var currentUserRow = mutableListOf<Float>()
+                                //To store prediction of current user to all food in menu
+                                var prediction  = mutableListOf<Float>()
+
+                                odb.collection("user_item_matrix").get()
+                                    .addOnSuccessListener { results->
+                                        for (document in results){
+                                            if (document.id != currentUser.email)
+                                                userItemMatrix.add(document.toString().split(",").map{it.toFloat()}.toMutableList())
+                                            else currentUserRow = document.toString().split(",").map{it.toFloat()}.toMutableList()
+                                        }
+
+                                        val ramean  = currentUserRow.average()
+                                        //Columns: (rai-ramean) | (rai-ramean)^2 Calculate this first, as it is reusable
+                                        var calcTableA = mutableListOf<MutableList<Float>>()
+                                        for (i in 0 until menu.size){
+                                            var value : Float = (currentUserRow[i] - ramean).toFloat()
+                                            calcTableA[0].add(value)
+                                            calcTableA[1].add(value.pow(2))
+                                        }
+
+                                        userItemMatrix.forEachIndexed { index, user ->
+                                            //For every other user in the matrix, calculate its table
+                                            val rbmean = user.average()
+                                            //Columns: (rbi-rbmean) | (rbi-rbmean)^2
+                                            var calcTableB = mutableListOf<MutableList<Float>>()
+                                            for (i in 0 until menu.size){
+                                                var value : Float = (user[i] - rbmean).toFloat()
+                                                calcTableB[0].add(value)
+                                                calcTableB[1].add(value.pow(2))
+                                            }
+                                            for (i in 0 until menu.size){
+                                                if (sim )
+                                            }
+                                        }
+                                    }*/
 
                                 // //Recommendation
                                 for (i in 0 until menuRecommended.size){
                                     menuRecommended[i].score = CB_score[i]!!
+                                    Log.d("debug", menuRecommended[i].menu_id)
                                 }
                                 menuRecommended.sortByDescending { it.score }
                             }
@@ -156,5 +199,16 @@ class MainActivityViewModel : ViewModel() {
                 }
 
         }
+    }
+
+    fun sim(userA : MutableList<MutableList<Float>> , userB : MutableList<MutableList<Float>>)  : Float {
+        var top = 0F
+        var btm = 0F
+        for (i in 0 until userA[0].size)
+        {
+            top += userA[0][i]*userB[0][i]
+            btm += userB[1][i]*userB[1][i]
+        }
+        return top/sqrt(btm)
     }
 }

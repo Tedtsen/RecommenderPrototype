@@ -6,6 +6,8 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
+import android.os.Parcelable
+import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.Toast
@@ -20,6 +22,7 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.content_main.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -29,6 +32,12 @@ class MainActivity : AppCompatActivity() {
     val MY_REQUEST_CODE : Int = 1212
     lateinit var mViewModel: MainActivityViewModel
     private lateinit var auth: FirebaseAuth
+    //global firestore food collection count var
+    @Parcelize
+    data class countParcel (var foodCount : Int = -1) : Parcelable
+    var mParcel = countParcel()
+
+
 
     private fun showsplash() {
         val dialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
@@ -61,6 +70,8 @@ class MainActivity : AppCompatActivity() {
             val categories = listOf("Popular", "Suggestions", "Rice", "Noodle", "Dumpling", "Biscuit", "Soup", "Bread", "Other")
             horizontalRecyclerView.apply {
                 var listOfLists = mViewModel.mLiveData.value!!
+                //Update foodCount, so we can use in profile settings to create user-matrix columns
+                mParcel.foodCount = listOfLists[0].size
                 layoutManager = LinearLayoutManager(this@MainActivity, RecyclerView.HORIZONTAL, false)
                 adapter = HorizontalRecyclerViewAdapter(categories, foodGridRecyclerView, listOfLists)
             }
@@ -68,8 +79,6 @@ class MainActivity : AppCompatActivity() {
             //Remove loading icon
             progressBar2.visibility = View.GONE
         })
-
-
 
         bottomNavigationView.setOnNavigationItemSelectedListener {
             when (it.itemId) {
@@ -138,11 +147,22 @@ class MainActivity : AppCompatActivity() {
                             val mFragment = supportFragmentManager.findFragmentByTag("PROFILE_SETTINGS_FRAGMENT_TAG")
                             if (mFragment==null){
                                 supportFragmentManager.popBackStack()
-                                loadFragment(ProfileSettingsFragment(), "PROFILE_SETTINGS_FRAGMENT_TAG", fullscreen = true)
+                                //First-time login and profile NOT set, so we need to add entry in user-item matrix (need foodCount for column width)
+                                val bundle = Bundle()
+                                bundle.putParcelable("foodCount", mParcel)
+                                val profileSettingsFragment = ProfileSettingsFragment()
+                                profileSettingsFragment.arguments = bundle
+                                // load fragment
+                                val container = R.id.containerFullscreen
+                                val transaction = supportFragmentManager.beginTransaction()
+                                transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
+                                transaction.replace(container, profileSettingsFragment, "PROFILE_SETTINGS_FRAGMENT_TAG")
+                                transaction.addToBackStack("PROFILE_SETTINGS_FRAGMENT_TAG")
+                                transaction.commit()
                             }
                         }
                 }
-            }
+            }else Log.d("Login", "Login result not successful")
         }
     }
 

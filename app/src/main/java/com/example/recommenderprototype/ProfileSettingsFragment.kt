@@ -261,7 +261,12 @@ class ProfileSettingsFragment : Fragment() {
                                 details["staple_weight"] = "1,1,1,1,1,1,1"
                                 details["protein_weight"] = initProteinWeight.joinToString (separator = ",")
 
+                                //Set above details
                                 odb.collection("user").document(FirebaseAuth.getInstance().currentUser!!.email!!).set(details)
+                                //Set user entry in user-item matrix (get foodCount from parcel from MainActivity)
+                                val foodCount = arguments!!.getParcelable<MainActivity.countParcel>("foodCount")!!.foodCount
+                                val userEntry = hashMapOf("CF_score" to IntArray(foodCount){_-> 0}.joinToString(separator = ","))
+                                odb.collection("user_item_matrix").document(FirebaseAuth.getInstance().currentUser!!.email!!).set(userEntry)
                                 Toast.makeText(this.context, "Profile Settings Submitted!", Toast.LENGTH_SHORT).show()
                                 fragmentManager!!.popBackStack()
                     }

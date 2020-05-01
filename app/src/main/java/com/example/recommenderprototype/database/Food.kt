@@ -10,7 +10,7 @@ import java.io.Serializable
 @Entity
 data class Food(
     val rest_id: String = "",
-    val menu_id: String = "",
+    var menu_id: String = "",
     val name: String = "",
     val price: Int = -1,
     val staple: String = "",
@@ -18,6 +18,7 @@ data class Food(
     val tag: String = "",
     val clicks: Int = -1,
     val imgurl : String? = null,
-    var score : Float = 0F
+    var score : Float = 0F,
+    val matrix_index : Int = -1
 ) : Parcelable
 
