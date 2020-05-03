@@ -1,12 +1,11 @@
 package com.example.recommenderprototype
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
@@ -17,9 +16,15 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
 
-//lambda listener
-class FoodRowAdapter(private var menu: List<Food>) :
-    RecyclerView.Adapter<FoodRowAdapter.GridViewHolder>() {
+class FoodRowAdapter() :
+    RecyclerView.Adapter<FoodRowAdapter.GridViewHolder>(), Filterable {
+    private var menuFull = ArrayList<Food>()
+    private var menu = ArrayList<Food>()
+
+    constructor( inputMenu: List<Food>) : this() {
+        this.menu = ArrayList<Food>(inputMenu)
+        menuFull = ArrayList(inputMenu)
+    }
 
     class GridViewHolder(view: View) : RecyclerView.ViewHolder(view){
         val title : TextView = itemView.findViewById(R.id.gridFoodName)
@@ -93,5 +98,42 @@ class FoodRowAdapter(private var menu: List<Food>) :
         holder.price.text = menu[position].price.toString()
         if (menu[position].imgurl != "")
         {Picasso.get().load(menu[position].imgurl).into(holder.image)}
+    }
+
+    override fun getFilter(): Filter {
+        return menuFilter
+    }
+
+    val menuFilter = object : Filter(){
+        override fun performFiltering(constraint: CharSequence?): FilterResults {
+            val filteredMenu = arrayListOf<Food>()
+
+            if (constraint == null || constraint.isEmpty()){
+                filteredMenu.addAll(menuFull)
+            }
+            else{
+                val filteredPattern = constraint.toString().trim()
+
+                for (food in menu){
+                    if (food.name.toString().contains(filteredPattern)
+                        || food.staple.toString().contains(filteredPattern)
+                        || food.main_ingredient.toString().contains(filteredPattern)
+                        || food.tag.toString().contains(filteredPattern))
+                    {
+                        filteredMenu.add(food)
+                    }
+                }
+            }
+            val results = FilterResults()
+            results.values = filteredMenu
+            return results
+        }
+
+        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+            menu.clear()
+            menu.addAll(results!!.values as ArrayList<Food>)
+            notifyDataSetChanged()
+        }
+
     }
 }

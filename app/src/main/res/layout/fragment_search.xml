@@ -32,13 +32,15 @@
         android:layout_marginEnd="8dp"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="12dp"
-        app:cardCornerRadius="4dp">
+        app:cardCornerRadius="4dp"
+        app:cardBackgroundColor="#E1F5FE">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/searchRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 

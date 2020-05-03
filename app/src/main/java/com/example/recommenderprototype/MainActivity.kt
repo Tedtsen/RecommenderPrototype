@@ -35,8 +35,11 @@ class MainActivity : AppCompatActivity() {
     //global firestore food collection count var
     @Parcelize
     data class countParcel (var foodCount : Int = -1) : Parcelable
-    var mParcel = countParcel()
+    private var mCountParcel = countParcel()
 
+    @Parcelize
+    data class listsParcel (var listOfLists : ArrayList<ArrayList<Food>> = ArrayList<ArrayList<Food>>()) : Parcelable
+    private var mListsParcel = listsParcel()
 
 
     private fun showsplash() {
@@ -69,9 +72,10 @@ class MainActivity : AppCompatActivity() {
 
             val categories = listOf("Popular", "Suggestions", "Rice", "Noodle", "Dumpling", "Biscuit", "Soup", "Bread", "Other")
             horizontalRecyclerView.apply {
-                var listOfLists = mViewModel.mLiveData.value!!
+                val listOfLists = mViewModel.mLiveData.value!!
                 //Update foodCount, so we can use in profile settings to create user-matrix columns
-                mParcel.foodCount = listOfLists[0].size
+                mCountParcel.foodCount = listOfLists[0].size
+                mListsParcel.listOfLists = listOfLists
                 layoutManager = LinearLayoutManager(this@MainActivity, RecyclerView.HORIZONTAL, false)
                 adapter = HorizontalRecyclerViewAdapter(categories, foodGridRecyclerView, listOfLists)
             }
@@ -90,7 +94,11 @@ class MainActivity : AppCompatActivity() {
                     val mFragment = supportFragmentManager.findFragmentByTag("SEARCH_FRAGMENT_TAG")
                     if (mFragment == null) {
                         supportFragmentManager.popBackStack()
-                        loadFragment(SearchFragment(), "SEARCH_FRAGMENT_TAG", fullscreen = false)
+                        val bundle = Bundle()
+                        bundle.putParcelable("menu", mListsParcel)
+                        val searchFragment = SearchFragment()
+                        searchFragment.arguments = bundle
+                        loadFragment(searchFragment, "SEARCH_FRAGMENT_TAG", fullscreen = false)
                     }
                     return@setOnNavigationItemSelectedListener true
                 }
@@ -149,7 +157,7 @@ class MainActivity : AppCompatActivity() {
                                 supportFragmentManager.popBackStack()
                                 //First-time login and profile NOT set, so we need to add entry in user-item matrix (need foodCount for column width)
                                 val bundle = Bundle()
-                                bundle.putParcelable("foodCount", mParcel)
+                                bundle.putParcelable("foodCount", mCountParcel)
                                 val profileSettingsFragment = ProfileSettingsFragment()
                                 profileSettingsFragment.arguments = bundle
                                 // load fragment
@@ -179,15 +187,18 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         val selectedItemId: Int = bottomNavigationView.selectedItemId
         val profileSettingsFragmentSelected = supportFragmentManager.findFragmentByTag("PROFILE_SETTINGS_FRAGMENT_TAG")
-        if (selectedItemId != R.id.menu_home && profileSettingsFragmentSelected == null) {
-            //if current fragment NOT HOME, profile SETTINGS fragment NOT SELECTED, go back to home
+        val foodDetailsFragmentSelected = supportFragmentManager.findFragmentByTag("FOOD_DETAILS_FRAGMENT_TAG")
+        if (selectedItemId != R.id.menu_home && profileSettingsFragmentSelected == null && foodDetailsFragmentSelected == null) {
+            //Redundant?
+            //if current fragment NOT HOME, profile SETTINGS fragment NOT SELECTED,
+            //food details in search fragment NOT SELECTED go back to home
             bottomNavigationView.selectedItemId = R.id.menu_home
             supportFragmentManager.popBackStack()
         }
         else if (profileSettingsFragmentSelected != null) {
             //BackButton Do nothing when pressed (profile NOT SET)
             //Else if profile fragment selected, then back to profile (because profile already set,
-            // so that user was able to enter profile fragment in the first place)
+            //so that user was able to enter profile fragment in the first place)
             val profileFragmentSelected = supportFragmentManager.findFragmentByTag("PROFILE_FRAGMENT_TAG")
             if (profileFragmentSelected != null)
                 supportFragmentManager.popBackStack()
