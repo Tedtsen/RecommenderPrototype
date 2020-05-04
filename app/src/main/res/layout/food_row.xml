@@ -29,9 +29,10 @@
                 android:layout_height="wrap_content"
                 android:text="Name"
                 android:textAlignment="center"
-                android:textSize="32sp"
+                android:textSize="24sp"
                 app:layout_constraintTop_toTopOf="parent"
                 android:paddingStart="16dp"
+                android:paddingTop="16dp"
                 app:layout_constraintStart_toEndOf="@id/gridFoodImage" />
 
             <TextView
@@ -40,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:text="Price"
                 android:textAlignment="center"
-                android:textSize="26sp"
+                android:textSize="20sp"
                 android:paddingStart="24dp"
                 app:layout_constraintStart_toEndOf="@id/gridFoodImage"
                 app:layout_constraintTop_toBottomOf="@id/gridFoodName" />
@@ -51,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:text="Restaurant"
                 android:textAlignment="center"
-                android:textSize="26sp"
+                android:textSize="20sp"
                 android:paddingStart="24dp"
                 app:layout_constraintStart_toEndOf="@id/gridFoodImage"
                 app:layout_constraintTop_toBottomOf="@id/gridFoodPrice" />
