@@ -17,7 +17,7 @@ data class Food(
     val main_ingredient: String = "",
     val tag: String = "",
     val clicks: Int = -1,
-    val imgurl : String? = null,
+    val imgurl : String? = "https://via.placeholder.com/128.png",
     var score : Float = 0F,
     val matrix_index : Int = -1
 ) : Parcelable

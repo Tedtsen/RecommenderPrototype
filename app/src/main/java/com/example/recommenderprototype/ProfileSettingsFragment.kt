@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
@@ -81,8 +82,8 @@ class ProfileSettingsFragment : Fragment() {
         cantEatBuilder.setView(cantEatListView)
         cantEatBuilder.setPositiveButton("Done"){ dialog, which ->
             var cantEatInputString : String = ""
-            val checked: SparseBooleanArray = cantEatListView.getCheckedItemPositions()
-            for (i in 0 until cantEatListView.getAdapter().getCount()) {
+            val checked: SparseBooleanArray = cantEatListView.checkedItemPositions
+            for (i in 0 until cantEatListView.adapter.count) {
                 if (checked[i]) {
                     if (cantEatInputString.length == 0)
                         cantEatInputString += cantEatListZH[i]
@@ -123,8 +124,9 @@ class ProfileSettingsFragment : Fragment() {
         preferBuilder.setPositiveButton("Done"){dialog, which ->
             preferInputString = ""
             preferNotList.clear()
-            val checked: SparseBooleanArray = preferListView.getCheckedItemPositions()
-            for (i in 0 until cantEatListView.getAdapter().getCount()) {
+            preferNotListZH.clear()
+            val checked: SparseBooleanArray = preferListView.checkedItemPositions
+            for (i in 0 until cantEatListView.adapter.count) {
                 if (checked[i]) {
                     initProteinWeight[i] = 1F
                     if (preferInputString.length == 0)
@@ -155,8 +157,8 @@ class ProfileSettingsFragment : Fragment() {
         preferNotBuilder.setView(preferNotListView)
         preferNotBuilder.setPositiveButton("Done"){dialog, which ->
             preferNotInputString = ""
-            val checked: SparseBooleanArray = preferNotListView.getCheckedItemPositions()
-            for (i in 0 until preferNotListView.getAdapter().getCount()) {
+            val checked: SparseBooleanArray = preferNotListView.checkedItemPositions
+            for (i in 0 until preferNotListView.adapter.count) {
                 if (checked[i]) {
                     //get index from prefer list as it is original, while prefer not list is modified
                     initProteinWeight[preferList.indexOf(preferNotList[i])] = 0F

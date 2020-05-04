@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.food_row.view.*
 
 class FoodRowAdapter() :
     RecyclerView.Adapter<FoodRowAdapter.GridViewHolder>(), Filterable {
@@ -41,7 +42,6 @@ class FoodRowAdapter() :
 
     override fun onBindViewHolder(holder: FoodRowAdapter.GridViewHolder, position: Int) {
         holder.itemView.setOnClickListener{
-
             //Update user weight on Firestore after click
             val odb = FirebaseFirestore.getInstance()
             val auth = FirebaseAuth.getInstance()
