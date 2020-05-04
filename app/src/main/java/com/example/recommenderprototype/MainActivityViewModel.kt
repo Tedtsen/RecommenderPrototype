@@ -123,14 +123,14 @@ class MainActivityViewModel : ViewModel() {
                                                 val index = userItemMatrix.size
                                                 userItemMatrix.add(document["CF_score"].toString().split(",").map { it.toFloat() }.toMutableList())
                                                 //Check if userItemMatrix size is up-to-date in case of new food document added
-                                                while (userItemMatrix[index].size != menu.size)
+                                                while (userItemMatrix[index].size < menu.size)
                                                     userItemMatrix[index].add(0F)
 
                                             }
                                             else {
                                                 currentUserRow = document["CF_score"].toString().split(",").map { it.toFloat() }.toMutableList()
                                                 //Check if currentUserRow size is up-to-date in case of new food document added
-                                                while (currentUserRow.size != menu.size)
+                                                while (currentUserRow.size < menu.size)
                                                     currentUserRow.add(0F)
                                             }
                                         }

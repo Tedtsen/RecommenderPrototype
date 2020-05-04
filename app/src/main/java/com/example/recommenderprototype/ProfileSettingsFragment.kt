@@ -237,9 +237,9 @@ class ProfileSettingsFragment : Fragment() {
                         notEmptyCheckBoxes[4] = true
                     if (activityAutoCompleteTextView.checkIfEmpty() == false)
                         notEmptyCheckBoxes[5] = true
-                    if (preferInputString != "")
+                    if (preferInputString != "" || preferMultiAutoCompleteTextView.checkIfEmpty() == false)
                         notEmptyCheckBoxes[6] = true
-                    if (preferNotInputString != "")
+                    if (preferNotInputString != "" || preferNotMultiAutoCompleteTextView.checkIfEmpty() == false)
                         notEmptyCheckBoxes[7] = true
                     var passed = true
                    for (status in notEmptyCheckBoxes)

@@ -80,6 +80,9 @@ class FoodRowAdapter() :
                 matrixDocRef.get().addOnSuccessListener { document ->
                     if (document.exists()){
                         var currentUserRow  = document["CF_score"].toString().split(",").map{it.toFloat()}.toMutableList()
+                        //Check if currentUserRow size is up-to-date in case of new food document added
+                        while (currentUserRow.size < menu.size)
+                            currentUserRow.add(0F)
                         //Increase the food score in user-item matrix
                         if (currentUserRow[menu[position].matrix_index] < 5)
                             currentUserRow[menu[position].matrix_index] = currentUserRow[menu[position].matrix_index] + 1F
