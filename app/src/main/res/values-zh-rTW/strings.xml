@@ -9,6 +9,19 @@
     <string name="search">搜尋</string>
     <string name="profile">個資</string>
 
+    <!-- Categories -->
+    <string-array name="categories">
+        <item>熱門</item>
+        <item>推薦</item>
+        <item>飯類</item>
+        <item>麵類</item>
+        <item>餃類</item>
+        <item>餅類</item>
+        <item>湯類</item>
+        <item>麵包</item>
+        <item>其他</item>
+    </string-array>
+
     <!-- Food Details Fragment -->
     <string name="food_details_nutrition"><u>營養咨詢</u></string>
     <string name="food_details_main_ingredients"><u>主要食材</u></string>
@@ -39,6 +52,11 @@
     <string name="profile_settings_weight_hint">輸入體重幾公斤</string>
     <string name="profile_settings_cant_eat_hint">過敏/宗教限制</string>
     <string name="profile_settings_activity_hint">活動量</string>
+    <string name="profile_settings_prefer_hint">你喜歡的?</string>
+    <string name="profile_settings_prefer_not_hint">你不喜歡的?</string>
+    /* Profile Settings Fragment Message */
+    <string name="profile_settings_conflict_warning_message">喜好設定資料有衝突！</string>
+    <string name="profile_settings_submitted_message">"設定已送出！"</string>
 
     <!-- Search Fragment -->
     <string name="search_hint">這裏搜尋</string>

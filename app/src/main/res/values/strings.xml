@@ -8,6 +8,19 @@
     <string name="search">Search</string>
     <string name="profile">Profile</string>
 
+    <!-- Categories -->
+    <string-array name="categories">
+        <item>Popular</item>
+        <item>Suggestions</item>
+        <item>Rice</item>
+        <item>Noodle</item>
+        <item>Dumpling</item>
+        <item>Fried Bread</item>
+        <item>Soup</item>
+        <item>Bread</item>
+        <item>Other</item>
+    </string-array>
+
     <!-- Food Details Fragment -->
     <string name="food_details_nutrition">Nutrition Information</string>
     <string name="food_details_main_ingredients">Main Ingredients</string>
@@ -38,6 +51,11 @@
     <string name="profile_settings_weight_hint">Enter weight in kg</string>
     <string name="profile_settings_cant_eat_hint">Allergy/Religious restrictions</string>
     <string name="profile_settings_activity_hint">How active is your lifestyle?</string>
+    <string name="profile_settings_prefer_hint">Things you like?</string>
+    <string name="profile_settings_prefer_not_hint">Things you don\'t like?</string>
+    /* Profile Settings Fragment Message */
+    <string name="profile_settings_conflict_warning_message">Data conflict for preference settings!</string>
+    <string name="profile_settings_submitted_message">"Profile Settings Submitted!"</string>
 
     <!-- Search Fragment -->
     <string name="search_hint">Search here</string>

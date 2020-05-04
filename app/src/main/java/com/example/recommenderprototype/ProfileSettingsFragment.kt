@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_profile_settings.*
@@ -54,6 +55,8 @@ class ProfileSettingsFragment : Fragment() {
                 weightEditText.hint = document["weight"].toString()
                 cantEatMultiAutoCompleteTextView.hint = document["cant_eat"].toString()
                 activityAutoCompleteTextView.hint = document["activity"].toString()
+                preferMultiAutoCompleteTextView.hint = document["prefer"].toString()
+                preferNotMultiAutoCompleteTextView.hint = document["prefer_not"].toString()
                 previousPreferString = document["prefer"].toString()
                 previousPreferNotString = document["prefer_not"].toString()
                 previousStapleWeight = document["staple_weight"].toString()
@@ -96,16 +99,6 @@ class ProfileSettingsFragment : Fragment() {
         cantEatTextView.setOnClickListener{cantEatDialog.show()}
         cantEatListView.setOnItemClickListener { parent, view, position, id ->
         }
-        /*val madapter = createAdapter(cantEatList, dropDownDesign = android.R.layout.simple_list_item_1)
-        cantEatMultiAutoCompleteTextView.setAdapter(madapter)
-        cantEatMultiAutoCompleteTextView.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
-        cantEatMultiAutoCompleteTextView.showSelections()
-        cantEatMultiAutoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
-            val selectedItem = madapter.getItem(position).toString()
-            Toast.makeText(this.context, selectedItem, Toast.LENGTH_SHORT).show()
-            madapter.notifyDataSetChanged()
-            //cantEatMultiAutoCompleteTextView.setAdapter(madapter)
-        }*/
 
         //Activity selections
         val activityList = listOf("Rare", "Few", "Moderate", "Frequent", "Extreme")
@@ -144,8 +137,10 @@ class ProfileSettingsFragment : Fragment() {
                     preferNotListZH.add(preferListZH[i])
                 }
             }
+            preferMultiAutoCompleteTextView.setText(preferInputString)
             preferSetFlag = true
         }
+        preferMultiAutoCompleteTextView.isEnabled = false
         val preferDialog = preferBuilder.create()
         preferTextView.setOnClickListener{preferDialog.show()}
 
@@ -170,7 +165,9 @@ class ProfileSettingsFragment : Fragment() {
                     else preferNotInputString += ("," + preferNotListZH[i])
                 }
             }
+            preferNotMultiAutoCompleteTextView.setText(preferNotInputString)
         }
+        preferNotMultiAutoCompleteTextView.isEnabled = false
         val dialog = preferNotBuilder.create()
         preferNotTextView.setOnClickListener{
             if (preferSetFlag)
@@ -213,9 +210,16 @@ class ProfileSettingsFragment : Fragment() {
                     //details["staple_weight"] = "1,1,1,1,1,1,1"
                     //details["protein_weight"] = initProteinVec.joinToString (separator = ",")
 
-                    odb.collection("user").document(FirebaseAuth.getInstance().currentUser!!.email!!).set(details)
-                    Toast.makeText(this.context, "Profile Settings Submitted!", Toast.LENGTH_SHORT).show()
-                    fragmentManager!!.popBackStack()
+                    val cantEatInputList = details["cant_eat"].toString().split(",")
+                    val preferInputList = details["prefer"].toString().split(",")
+                    val preferNotInputList = details["prefer_not"].toString().split(",")
+                    if (checkIfConflict(cantEatInputList, preferInputList, preferNotInputList) == false){
+                        odb.collection("user").document(FirebaseAuth.getInstance().currentUser!!.email!!).set(details)
+                        Toast.makeText(this.context, getString(R.string.profile_settings_submitted_message), Toast.LENGTH_SHORT).show()
+                        fragmentManager!!.popBackStack()
+                    }
+                    else
+                        Snackbar.make(view, getString(R.string.profile_settings_conflict_warning_message), Snackbar.LENGTH_SHORT).show()
                 }
                 else{
                     var notEmptyCheckBoxes = BooleanArray(8){false}
@@ -261,14 +265,25 @@ class ProfileSettingsFragment : Fragment() {
                                 details["staple_weight"] = "1,1,1,1,1,1,1"
                                 details["protein_weight"] = initProteinWeight.joinToString (separator = ",")
 
-                                //Set above details
-                                odb.collection("user").document(FirebaseAuth.getInstance().currentUser!!.email!!).set(details)
-                                //Set user entry in user-item matrix (get foodCount from parcel from MainActivity)
-                                val foodCount = arguments!!.getParcelable<MainActivity.countParcel>("foodCount")!!.foodCount
-                                val userEntry = hashMapOf("CF_score" to IntArray(foodCount){_-> 0}.joinToString(separator = ","))
-                                odb.collection("user_item_matrix").document(FirebaseAuth.getInstance().currentUser!!.email!!).set(userEntry)
-                                Toast.makeText(this.context, "Profile Settings Submitted!", Toast.LENGTH_SHORT).show()
-                                fragmentManager!!.popBackStack()
+                                val cantEatInputList = details["cant_eat"].toString().split(",")
+                                val preferInputList = details["prefer"].toString().split(",")
+                                val preferNotInputList = details["prefer_not"].toString().split(",")
+
+                                if (checkIfConflict(cantEatInputList, preferInputList, preferNotInputList) == false){
+
+                                    //Set above details
+                                    odb.collection("user").document(FirebaseAuth.getInstance().currentUser!!.email!!).set(details)
+
+                                    //Set user entry in user-item matrix (get foodCount from parcel from MainActivity)
+                                    val foodCount = arguments!!.getParcelable<MainActivity.countParcel>("foodCount")!!.foodCount
+                                    val userEntry = hashMapOf("CF_score" to IntArray(foodCount){_-> 0}.joinToString(separator = ","))
+                                    odb.collection("user_item_matrix").document(FirebaseAuth.getInstance().currentUser!!.email!!).set(userEntry)
+
+                                    Toast.makeText(this.context, getString(R.string.profile_settings_submitted_message), Toast.LENGTH_SHORT).show()
+                                    fragmentManager!!.popBackStack()
+                                }
+                                else
+                                    Snackbar.make(view, getString(R.string.profile_settings_conflict_warning_message), Snackbar.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -308,6 +323,18 @@ class ProfileSettingsFragment : Fragment() {
             }
         })
         return isEmpty
+    }
+
+    private fun checkIfConflict(listA : List<String>, listB : List<String>, listC : List<String>) : Boolean{
+        listA.forEach { element ->
+            if (listB.contains(element) || listC.contains(element))
+                return true
+        }
+        listB.forEach { element ->
+            if (listC.contains(element))
+                return true
+        }
+        return false
     }
 
     private fun createAdapter(list : List<String>, dropDownDesign : Int) : ArrayAdapter<Any>{

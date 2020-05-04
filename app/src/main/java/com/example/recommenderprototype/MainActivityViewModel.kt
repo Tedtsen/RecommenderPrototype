@@ -112,6 +112,8 @@ class MainActivityViewModel : ViewModel() {
                                 var userItemMatrix = mutableListOf<MutableList<Float>>()
                                 var currentUserRow = mutableListOf<Float>()
                                 //To store prediction of current user to all food in menu
+                                var prediction  = arrayOfNulls<Float>(size = menu.size)
+                                prediction.fill(0F,fromIndex = 0, toIndex = menu.size)
 
                                 odb.collection("user_item_matrix").get()
                                     .addOnSuccessListener { results->
@@ -140,8 +142,6 @@ class MainActivityViewModel : ViewModel() {
                                             calcTableA[1].add(if (value > -50F) value.pow(2) else value)
                                         }
 
-
-                                        var prediction  = arrayOfNulls<Float>(size = menu.size)
                                         for (i in 0 until menu.size) {
                                             //Prediction equation top & bottom
                                             var predTop = 0F
@@ -191,7 +191,8 @@ class MainActivityViewModel : ViewModel() {
 
                                 // //Recommendation
                                 for (i in 0 until menuRecommended.size){
-                                    menuRecommended[i].score = CB_score[i]!!
+                                    if (CB_score[i]!! >= 0F)
+                                    menuRecommended[i].score = ( 0.7*CB_score[i]!! + 0.3*prediction[i]!! ).toFloat()
                                     Log.d("debug", menuRecommended[i].menu_id)
                                 }
                                 menuRecommended.sortByDescending { it.score }

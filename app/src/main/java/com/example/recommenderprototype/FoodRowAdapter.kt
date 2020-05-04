@@ -73,6 +73,17 @@ class FoodRowAdapter() :
                         //Increase the weights of the selected staple and main ingredient under the user profile
                         odb.collection("user").document(currentUser.email!!).update("staple_weight", user.staple_weight.joinToString(separator = ","))
                         odb.collection("user").document(currentUser.email!!).update("protein_weight", user.protein_weight.joinToString(separator = ","))
+
+                    }
+                }
+                val matrixDocRef = odb.collection("user_item_matrix").document(currentUser.email!!)
+                matrixDocRef.get().addOnSuccessListener { document ->
+                    if (document.exists()){
+                        var currentUserRow  = document["CF_score"].toString().split(",").map{it.toFloat()}.toMutableList()
+                        //Increase the food score in user-item matrix
+                        if (currentUserRow[menu[position].matrix_index] < 5)
+                            currentUserRow[menu[position].matrix_index] = currentUserRow[menu[position].matrix_index] + 1F
+                        odb.collection("user_item_matrix").document(currentUser.email!!).update("CF_score", currentUserRow.joinToString (separator = ","))
                     }
                 }
             }

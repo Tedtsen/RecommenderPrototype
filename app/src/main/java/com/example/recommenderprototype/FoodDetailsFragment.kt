@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
@@ -48,6 +50,10 @@ class FoodDetailsFragment : Fragment() {
                     transaction.commit()
                 }
             }
+
+        mainIngredientsListView.apply {
+            adapter = ArrayAdapter(this.context, android.R.layout.simple_list_item_1, selectedFood.main_ingredient.chunked(size = 2))
+        }
     }
 
     override fun onResume() {

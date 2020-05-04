@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
                 adapter = FoodRowAdapter(mViewModel.mLiveData.value!![0])
             }
 
-            val categories = listOf("Popular", "Suggestions", "Rice", "Noodle", "Dumpling", "Biscuit", "Soup", "Bread", "Other")
+            val categories = resources.getStringArray(R.array.categories).toList()
             horizontalRecyclerView.apply {
                 val listOfLists = mViewModel.mLiveData.value!!
                 //Update foodCount, so we can use in profile settings to create user-matrix columns
