@@ -145,10 +145,14 @@
             android:id="@+id/submitProfileSettingsButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="24dp"
-            android:text="Submit"
+            android:paddingStart="156dp"
+            android:paddingEnd="156dp"
+            android:background="#E8F5E9"
+            android:layout_marginTop="14dp"
+            android:text="@string/profile_settings_submit"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
@@ -194,7 +198,6 @@
             android:hint="@string/profile_settings_prefer_not_hint"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/preferNotTextView" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

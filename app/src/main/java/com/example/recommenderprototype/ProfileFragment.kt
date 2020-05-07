@@ -32,7 +32,7 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         logoutButton.setOnClickListener {
             AuthUI.getInstance().signOut(this.context!!).addOnSuccessListener {
-                Toast.makeText(this.context, "Logged out!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this.context, getString(R.string.profile_loggedout_message), Toast.LENGTH_SHORT).show()
                 fragmentManager!!.popBackStack()
             }
         }
@@ -48,14 +48,14 @@ class ProfileFragment : Fragment() {
         feedbackButton.setOnClickListener {
             val input: EditText = EditText(this.context)
             val builder = AlertDialog.Builder(this.context)
-            builder.setTitle("Feedback and Suggestions")
-            builder.setMessage("Please tell us the glitches/bugs you found or some suggestions to improve the app.")
+            builder.setTitle(getString(R.string.profile_feedback_and_suggestions))
+            builder.setMessage(getString(R.string.profile_feedback_message))
             builder.setView(input)
-            builder.setPositiveButton("Submit") { dialog, which ->
-                Toast.makeText(this.context, "Submitted", Toast.LENGTH_LONG).show()
+            builder.setPositiveButton(getString(R.string.profile_settings_submit)) { dialog, which ->
+                Toast.makeText(this.context, getString(R.string.profile_feedback_submitted), Toast.LENGTH_LONG).show()
 
             }
-            builder.setNegativeButton("Cancel") { dialog, which ->
+            builder.setNegativeButton(getString(R.string.profile_feedback_cancel)) { dialog, which ->
                 dialog.dismiss()
             }
             builder.show()

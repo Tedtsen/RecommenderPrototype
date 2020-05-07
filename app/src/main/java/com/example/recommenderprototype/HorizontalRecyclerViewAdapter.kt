@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.recommenderprototype.database.Food
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.category_row.view.*
 import kotlinx.android.synthetic.main.content_main.*
 
@@ -36,7 +38,17 @@ class HorizontalRecyclerViewAdapter(val categories: List<String>, foodGridRecycl
                 changeRecyclerViewList(holder, 0, position)
             }
             else if (categories[position] == categoriesStrings[1]) {
-                changeRecyclerViewList(holder, 1, position)
+                //If logged in, show suggestions, else pop msg
+                if (FirebaseAuth.getInstance().currentUser != null){
+                    //If first item name in suggestion list is not as below (check algorithm calculation code)
+                    //Show the suggestion list, else pop msg to tell user to close app in order to refresh suggestion list
+                    if (lists[1][0].name != "Login to view!")
+                        changeRecyclerViewList(holder, 1, position)
+                    else
+                        Snackbar.make(holder.itemView, holder.itemView.context.getString(R.string.suggestions_close_app_to_refresh), Snackbar.LENGTH_SHORT).show()
+                }
+                else
+                    Snackbar.make(holder.itemView, holder.itemView.context.getString(R.string.suggestions_login_to_view), Snackbar.LENGTH_SHORT).show()
             }
             else if (categories[position] == categoriesStrings[2]) {
                 changeRecyclerViewList(holder, 2, position)

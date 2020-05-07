@@ -174,7 +174,7 @@ class ProfileSettingsFragment : Fragment() {
         preferNotTextView.setOnClickListener{
             if (preferSetFlag)
                 dialog.show()
-            else Toast.makeText(context, "Please Set Preferred Items First!", Toast.LENGTH_LONG).show()
+            else Toast.makeText(context, getString(R.string.profile_settings_set_preferred_first), Toast.LENGTH_LONG).show()
         }
         
         //Submission

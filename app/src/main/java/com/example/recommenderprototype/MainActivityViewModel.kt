@@ -18,8 +18,7 @@ class MainActivityViewModel : ViewModel() {
     fun fetchData() {
 
         viewModelScope.launch(Dispatchers.Default) {
-            //val settings = FirebaseFirestoreSettings.Builder()
-                //.setPersistenceEnabled(true).build()
+
             val odb: FirebaseFirestore = FirebaseFirestore.getInstance()
             val menu = ArrayList<Food>()
             var listOfLists = arrayListOf<ArrayList<Food>>()
@@ -29,7 +28,6 @@ class MainActivityViewModel : ViewModel() {
                 .addOnSuccessListener { results ->
                     var index = 0
                     for (document in results) {
-                        //need to declr docObj here?
                         menu.add(index, document.toObject(Food::class.java))
                         menu[index].menu_id = document.id
                     }
@@ -244,7 +242,6 @@ class MainActivityViewModel : ViewModel() {
                     listOfLists.add(menu.filter { it-> it.staple == "其他" } as ArrayList<Food>)
 
                     //postValue is used to tell main activity this thread is done
-                    Log.d("deb", listOfLists.size.toString())
                     mLiveData.postValue(listOfLists)
 
                 }
@@ -265,13 +262,8 @@ class MainActivityViewModel : ViewModel() {
             //If userA ith item is rated && userB as well, calculate top and bottom of equation
             if (userA[0][i] > -50F && userB[0][i] > -50F) {
                 top += userA[0][i] * userB[0][i]
-                //Log.d("prediction", "userA[0]["+i+"] " + userA[0][i])
-                //Log.d("prediction", "userB[0]["+i+"] " + userB[0][i])
                 btmA += userA[1][i]
                 btmB += userB[1][i]
-                //Log.d("prediction", "userA[1]["+i+"] " + userA[1][i])
-                //Log.d("prediction", "userB[1]["+i+"] " + userB[1][i])
-                //Log.d("prediction", "top " + top + " bottom " + btmA*btmB)
             }
         }
         return top/sqrt(btmA*btmB)

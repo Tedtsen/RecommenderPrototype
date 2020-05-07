@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         showsplash()
 
+        //Coroutine thread to get data and calculate recommendation
         mViewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
         mViewModel.fetchData()
         mViewModel.mLiveData.observe(this, Observer {
@@ -137,7 +138,7 @@ class MainActivity : AppCompatActivity() {
                 //Signed in successfully, check if profile details are set
                 auth = FirebaseAuth.getInstance()
                 val currentUserEmail = auth.currentUser!!.email!!
-                Toast.makeText(this, "Signed in as ${currentUserEmail}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.profile_signed_in_as)+ " " + currentUserEmail, Toast.LENGTH_SHORT).show()
                 val odb = FirebaseFirestore.getInstance()
                 val docRef = odb.collection("user").document(currentUserEmail)
                 docRef.get()
@@ -170,7 +171,7 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                 }
-            }else Log.d("Login", "Login result not successful")
+            }else Log.d("Login", "Login Result Not Successful")
         }
     }
 
