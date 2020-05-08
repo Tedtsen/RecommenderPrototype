@@ -220,14 +220,13 @@ class MainActivity : AppCompatActivity() {
         val selectedItemId: Int = bottomNavigationView.selectedItemId
         val profileSettingsFragmentSelected = supportFragmentManager.findFragmentByTag("PROFILE_SETTINGS_FRAGMENT_TAG")
         val foodDetailsFragmentSelected = supportFragmentManager.findFragmentByTag("FOOD_DETAILS_FRAGMENT_TAG")
-        /*if (selectedItemId != R.id.menu_home && profileSettingsFragmentSelected == null && foodDetailsFragmentSelected == null) {
-            //Redundant?
+        if (selectedItemId != R.id.menu_home && profileSettingsFragmentSelected == null && foodDetailsFragmentSelected == null) {
             //if current fragment NOT HOME, profile SETTINGS fragment NOT SELECTED,
             //food details in search fragment NOT SELECTED go back to home
             bottomNavigationView.selectedItemId = R.id.menu_home
             supportFragmentManager.popBackStack()
-        }*/
-        if (profileSettingsFragmentSelected != null) {
+        }
+        else if (profileSettingsFragmentSelected != null) {
             //BackButton Do nothing when pressed (profile NOT SET)
             //Else if profile fragment selected, then back to profile (because profile already set,
             //so that user was able to enter profile fragment in the first place)

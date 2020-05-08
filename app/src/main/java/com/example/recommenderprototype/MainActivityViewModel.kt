@@ -86,7 +86,8 @@ class MainActivityViewModel : ViewModel() {
                                 user.staple_weight = document["staple_weight"].toString().split(",").map{it.toFloat()}.toMutableList()
                                 user.protein_weight = document["protein_weight"].toString().split(",").map {it.toFloat()}.toMutableList()
                                 user.bookmark = document["bookmark"].toString().split(",").map {it.toInt()}.toMutableList()
-                                user.history = document["history"].toString().split(",").map {it.toInt()}.toMutableList()
+                                if (document["history"].toString() != "")
+                                    user.history = document["history"].toString().split(",").map {it.toInt()}.toMutableList()
 
                                 /*-- Algorithm --*/
                                 //Knowledge - Based

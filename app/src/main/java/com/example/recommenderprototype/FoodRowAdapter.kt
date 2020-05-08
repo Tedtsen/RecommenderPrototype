@@ -62,7 +62,7 @@ class FoodRowAdapter() :
                         user.protein_weight = document["protein_weight"].toString().split(",").map{it.toFloat()}.toMutableList()
                         user.history = document["history"].toString().split(",").map { it.toInt() }.toMutableList()
                         staple_options.forEachIndexed { index, option ->
-                            if (menu[position].staple.contains(option))
+                            if (menu[position].staple.contains(option) && menu[position].staple == option)
                             {
                                 if (user.staple_weight[index] < 5)
                                     user.staple_weight[index] += 0.1F
