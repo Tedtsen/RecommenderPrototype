@@ -1,6 +1,7 @@
 package com.example.recommenderprototype
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,14 +16,18 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.food_row.view.*
+import kotlinx.android.parcel.Parcelize
 
 class FoodRowAdapter() :
     RecyclerView.Adapter<FoodRowAdapter.GridViewHolder>(), Filterable {
     private var menuFull = ArrayList<Food>()
     private var menu = ArrayList<Food>()
+    private var user = User()
+    @Parcelize
+    data class CountParcel (val size : Int = -1) : Parcelable
 
-    constructor( inputMenu: List<Food>) : this() {
+    constructor( inputMenu: List<Food>, inputUser : User) : this() {
+        this.user = inputUser
         this.menu = ArrayList<Food>(inputMenu)
         menuFull = ArrayList(inputMenu)
     }
@@ -48,7 +53,6 @@ class FoodRowAdapter() :
             val currentUser = auth.currentUser
             if (currentUser != null){
                 val docRef = odb.collection("user").document(currentUser.email!!)
-                val user = User()
                 docRef.get().addOnSuccessListener { document ->
                     if (document.exists()){
                         //If userDocument exists
@@ -56,6 +60,7 @@ class FoodRowAdapter() :
                         val protein_options = listOf<String>("雞肉", "豬肉", "牛肉", "羊肉", "魚肉", "海鮮", "雞蛋", "蔬果", "豆腐")
                         user.staple_weight = document["staple_weight"].toString().split(",").map{it.toFloat()}.toMutableList()
                         user.protein_weight = document["protein_weight"].toString().split(",").map{it.toFloat()}.toMutableList()
+                        user.history = document["history"].toString().split(",").map { it.toInt() }.toMutableList()
                         staple_options.forEachIndexed { index, option ->
                             if (menu[position].staple.contains(option))
                             {
@@ -97,13 +102,15 @@ class FoodRowAdapter() :
             //Bundle
             val bundle = Bundle()
             bundle.putParcelable("selectedFood", menu[position])
+            bundle.putParcelable("menuSize", CountParcel(size = menu.size))
+            bundle.putParcelable("user", user)
             val foodDetailsFragment = FoodDetailsFragment()
             foodDetailsFragment.arguments = bundle
 
             // load fragment of the selected food
             val transaction = (holder.itemView.context as FragmentActivity).supportFragmentManager.beginTransaction()
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-            transaction.replace(R.id.containerFullscreen, foodDetailsFragment, "FOOD_DETAILS_FRAGMENT_TAG")
+            transaction.add(R.id.containerFullscreen, foodDetailsFragment, "FOOD_DETAILS_FRAGMENT_TAG")
             transaction.addToBackStack("FOOD_DETAILS_FRAGMENT_TAG")
             transaction.commit()
 
@@ -151,3 +158,4 @@ class FoodRowAdapter() :
 
     }
 }
+

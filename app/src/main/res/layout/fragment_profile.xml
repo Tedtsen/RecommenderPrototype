@@ -39,9 +39,37 @@
         android:layout_marginEnd="28dp"
         android:background="@drawable/rectangle"
         android:text="@string/profile_settings"
-        android:textSize="28sp"
+        android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/userPhotoImageView" />
+
+    <Button
+        android:id="@+id/bookmarkButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="28dp"
+        android:background="@drawable/rectangle"
+        android:text="@string/profile_bookmark"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profileSettingsButton" />
+
+    <Button
+        android:id="@+id/historyButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="28dp"
+        android:background="@drawable/rectangle"
+        android:text="@string/profile_history"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bookmarkButton" />
 
     <Button
         android:id="@+id/feedbackButton"
@@ -52,10 +80,10 @@
         android:layout_marginEnd="28dp"
         android:background="@drawable/rectangle"
         android:text="@string/profile_feedback"
-        android:textSize="28sp"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profileSettingsButton" />
+        app:layout_constraintTop_toBottomOf="@id/historyButton" />
 
     <Button
         android:id="@+id/logoutButton"

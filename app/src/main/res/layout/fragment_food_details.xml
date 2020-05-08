@@ -118,13 +118,23 @@
                 app:layout_constraintTop_toBottomOf="@id/nutritionInformationTextView" />
 
             <TextView
+                android:id="@+id/calorieColon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=":"
+                android:textSize="20sp"
+                app:layout_constraintStart_toEndOf="@id/calorieTextView"
+                app:layout_constraintTop_toTopOf="@id/calorieTextView"
+                android:layout_marginStart="14dp"/>
+
+            <TextView
                 android:id="@+id/calorieValTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="14dp"
-                android:text=":  TextView"
+                android:text="TextView"
                 android:textSize="20sp"
-                app:layout_constraintStart_toEndOf="@id/calorieTextView"
+                app:layout_constraintStart_toEndOf="@id/calorieColon"
                 app:layout_constraintTop_toTopOf="@id/calorieTextView" />
 
             <TextView
@@ -137,10 +147,19 @@
                 app:layout_constraintTop_toBottomOf="@id/calorieTextView" />
 
             <TextView
+                android:id="@+id/starchColon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=":"
+                android:textSize="20sp"
+                app:layout_constraintStart_toStartOf="@+id/calorieColon"
+                app:layout_constraintTop_toTopOf="@id/starchTextView" />
+
+            <TextView
                 android:id="@+id/starchValTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=":  TextView"
+                android:text="TextView"
                 android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="@id/calorieValTextView"
                 app:layout_constraintTop_toBottomOf="@id/calorieValTextView" />
@@ -155,10 +174,19 @@
                 app:layout_constraintTop_toBottomOf="@id/starchTextView" />
 
             <TextView
+                android:id="@+id/proteinColon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=":"
+                android:textSize="20sp"
+                app:layout_constraintStart_toStartOf="@+id/calorieColon"
+                app:layout_constraintTop_toTopOf="@id/proteinTextView" />
+
+            <TextView
                 android:id="@+id/proteinValTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=":  TextView"
+                android:text="TextView"
                 android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="@id/starchValTextView"
                 app:layout_constraintTop_toBottomOf="@id/starchValTextView" />
@@ -173,10 +201,19 @@
                 app:layout_constraintTop_toBottomOf="@id/proteinTextView" />
 
             <TextView
+                android:id="@+id/fatColon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=":"
+                android:textSize="20sp"
+                app:layout_constraintStart_toStartOf="@+id/calorieColon"
+                app:layout_constraintTop_toTopOf="@id/fatTextView" />
+
+            <TextView
                 android:id="@+id/fatValTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=":  TextView"
+                android:text="TextView"
                 android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="@id/proteinValTextView"
                 app:layout_constraintTop_toBottomOf="@id/proteinValTextView" />
@@ -224,6 +261,14 @@
                 android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="@id/foodTypeTextView"
                 app:layout_constraintTop_toBottomOf="@id/foodTypeTextView" />
+
+            <ToggleButton
+                android:id="@+id/bookmarkButton"
+                android:layout_width="35dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/foodTypeTextView"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="24dp"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>

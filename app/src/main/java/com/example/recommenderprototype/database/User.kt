@@ -1,5 +1,10 @@
 package com.example.recommenderprototype.database
 
+import android.os.Parcelable
+import androidx.room.Entity
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class User (
     var activity: String = "",
     var age: Int = -1,
@@ -10,5 +15,7 @@ data class User (
     var prefer: String = "",
     var prefer_not: String = "",
     var protein_weight: MutableList<Float> = mutableListOf<Float>(),
-    var staple_weight: MutableList<Float> = mutableListOf<Float>()
-)
+    var staple_weight: MutableList<Float> = mutableListOf<Float>(),
+    var bookmark : MutableList<Int> = mutableListOf<Int>(),
+    var history : MutableList<Int> = mutableListOf<Int>()
+) : Parcelable

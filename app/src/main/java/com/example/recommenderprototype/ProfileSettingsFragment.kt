@@ -45,7 +45,7 @@ class ProfileSettingsFragment : Fragment() {
         var previousProteinWeight : String = ""
         val initProteinWeight = mutableListOf<Float>(0.5F,0.5F,0.5F,0.5F,0.5F,0.5F,0.5F,0.5F,0.5F,0.5F)
 
-        //Show the details user already submitted before when creating the profile for the first time
+        //Show the details user already submitted before, when they created the profile for the first time
         val odb = FirebaseFirestore.getInstance()
         val docRef = odb.collection("user").document(FirebaseAuth.getInstance().currentUser!!.email!!)
         docRef.get().addOnSuccessListener { document ->
@@ -177,7 +177,7 @@ class ProfileSettingsFragment : Fragment() {
             else Toast.makeText(context, getString(R.string.profile_settings_set_preferred_first), Toast.LENGTH_LONG).show()
         }
         
-        //Submission
+        /* Submission : 2 parts */
         submitProfileSettingsButton.setOnClickListener{
 
             //If user profile already exists, then allow empty fields
@@ -208,10 +208,6 @@ class ProfileSettingsFragment : Fragment() {
                                                         initProteinWeight.joinToString (separator = ",")
                                                 else previousProteinWeight
 
-                    //Debugging Lines Below
-                    //details["staple_weight"] = "1,1,1,1,1,1,1"
-                    //details["protein_weight"] = initProteinVec.joinToString (separator = ",")
-
                     val cantEatInputList = details["cant_eat"].toString().split(",")
                     val preferInputList = details["prefer"].toString().split(",")
                     val preferNotInputList = details["prefer_not"].toString().split(",")
@@ -223,6 +219,7 @@ class ProfileSettingsFragment : Fragment() {
                     else
                         Snackbar.make(view, getString(R.string.profile_settings_conflict_warning_message), Snackbar.LENGTH_SHORT).show()
                 }
+                //If user profile doesn't exist, doesn't allow empty fields
                 else{
                     var notEmptyCheckBoxes = BooleanArray(8){false}
                     if (genderAutoCompleteTextView.checkIfEmpty() == false)
@@ -247,6 +244,7 @@ class ProfileSettingsFragment : Fragment() {
                        if (status != true)
                            passed = false
                    }
+                    //If no empty fields
                     if (passed){
                                 val gender = genderAutoCompleteTextView.getTextThenHint()
                                 val age = AgeEditText.getTextThenHint()
@@ -254,6 +252,7 @@ class ProfileSettingsFragment : Fragment() {
                                 val weight = weightEditText.getTextThenHint().toInt()
                                 val cantEat = cantEatMultiAutoCompleteTextView.getTextThenHint()
                                 val activity = activityAutoCompleteTextView.getTextThenHint()
+                                val foodCount = arguments!!.getParcelable<MainActivity.CountParcel>("foodCount")!!.foodCount
 
                                 val details  = HashMap<String, kotlin.Any>()
                                 details["gender"] = gender
@@ -266,6 +265,8 @@ class ProfileSettingsFragment : Fragment() {
                                 details["activity"] = activity
                                 details["staple_weight"] = "1,1,1,1,1,1,1"
                                 details["protein_weight"] = initProteinWeight.joinToString (separator = ",")
+                                details["bookmark"] = IntArray(foodCount){_ -> 0}.joinToString(separator = ",")
+                                details["history"] = ""
 
                                 val cantEatInputList = details["cant_eat"].toString().split(",")
                                 val preferInputList = details["prefer"].toString().split(",")
@@ -276,8 +277,7 @@ class ProfileSettingsFragment : Fragment() {
                                     //Set above details
                                     odb.collection("user").document(FirebaseAuth.getInstance().currentUser!!.email!!).set(details)
 
-                                    //Set user entry in user-item matrix (get foodCount from parcel from MainActivity)
-                                    val foodCount = arguments!!.getParcelable<MainActivity.countParcel>("foodCount")!!.foodCount
+                                    //Initialise user entry in user-item matrix (get foodCount from parcel from MainActivity)
                                     val userEntry = hashMapOf("CF_score" to IntArray(foodCount){_-> 0}.joinToString(separator = ","))
                                     odb.collection("user_item_matrix").document(FirebaseAuth.getInstance().currentUser!!.email!!).set(userEntry)
 

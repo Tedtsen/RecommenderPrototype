@@ -19,6 +19,7 @@ data class Food(
     val clicks: Int = -1,
     val imgurl : String? = "https://via.placeholder.com/128.png",
     var score : Float = 0F,
-    val matrix_index : Int = -1
+    val matrix_index : Int = -1,
+    var bookmark : Boolean = false
 ) : Parcelable
 

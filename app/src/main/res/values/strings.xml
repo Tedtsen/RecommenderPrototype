@@ -32,12 +32,18 @@
     <string name="food_details_starch">Starch</string>
     <string name="food_details_protein">Protein</string>
     <string name="food_details_fat">Fat</string>
+    /* Food Details Message */
+    <string name="food_details_bookmarked">Bookmarked!</string>
+    <string name="food_details_remove_bookmark">Bookmark Removed!</string>
+    <string name="food_details_login_to_bookmark">Please Login To Bookmark!</string>
 
     <!-- Restaurant Details Fragment -->
     <string name="restaurant_details_restaurant_menu">Restaurant Menu</string>
 
     <!-- Profile Fragment-->
     <string name="profile_settings">Profile Settings</string>
+    <string name="profile_bookmark">Bookmark</string>
+    <string name="profile_history">History</string>
     <string name="profile_feedback">Feedback</string>
     <string name="profile_logout">Logout</string>
     /* Profile Fragment Message*/

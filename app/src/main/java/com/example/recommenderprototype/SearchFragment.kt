@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.recommenderprototype.database.Food
+import com.example.recommenderprototype.database.User
 import kotlinx.android.synthetic.main.fragment_search.*
 
 class SearchFragment : Fragment() {
@@ -29,8 +30,9 @@ class SearchFragment : Fragment() {
         searchView.imeOptions = EditorInfo.IME_ACTION_DONE
 
         //Default results
-        val listOfLists = arguments!!.getParcelable<MainActivity.listsParcel>("menu")!!.listOfLists
-        val mAdapter = FoodRowAdapter(listOfLists[0])
+        val listOfLists = arguments!!.getParcelable<MainActivity.ListsParcel>("menu")!!.listOfLists
+        val user = arguments!!.getParcelable<User>("user")!!
+        val mAdapter = FoodRowAdapter(listOfLists[0], user)
         searchRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = mAdapter

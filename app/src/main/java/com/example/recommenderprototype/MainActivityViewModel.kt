@@ -8,6 +8,7 @@ import com.example.recommenderprototype.database.Food
 import com.example.recommenderprototype.database.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.fragment_profile_settings.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.math.pow
@@ -15,6 +16,9 @@ import kotlin.math.sqrt
 
 class MainActivityViewModel : ViewModel() {
     val mLiveData = MutableLiveData<ArrayList<ArrayList<Food>>>()
+    val mUserLiveData = MutableLiveData<User>()
+    val user = User()
+
     fun fetchData() {
 
         viewModelScope.launch(Dispatchers.Default) {
@@ -26,24 +30,49 @@ class MainActivityViewModel : ViewModel() {
             //Firestore database read function
             odb.collection("food_test").get()
                 .addOnSuccessListener { results ->
+
+                    /*-- Populate Menu --*/
                     var index = 0
                     for (document in results) {
+                        //Push all elements back 1 space and insert new element at 0th index
                         menu.add(index, document.toObject(Food::class.java))
                         menu[index].menu_id = document.id
                     }
 
-                    //Create different categories of menus
+                    /*-- Get Bookmark Data --*/
+                    val currentUser = FirebaseAuth.getInstance().currentUser
+                    if (currentUser != null) {
+                        //Get user document to check for bookmark
+                        val odb = FirebaseFirestore.getInstance()
+                        val docRef = odb.collection("user").document(currentUser.email!!)
+                        docRef.get().addOnSuccessListener { document ->
+                            if (document.exists()) {
+                                user.bookmark =
+                                    document["bookmark"].toString().split(",").map { it.toInt() }
+                                        .toMutableList()
+
+                                //Check if bookmark size is up-to-date in case of new food document added
+                                while (user.bookmark.size < menu.size)
+                                    user.bookmark.add(0)
+
+                                menu.forEachIndexed { index, food ->
+                                    if (user.bookmark[food.matrix_index] == 1)
+                                        food.bookmark = true
+                                }
+                            }
+                        }
+                    }
+
+                    //Create different categories of menus (Extras menu with filter please the code after recommendation algorithm)
                     var menuRecommended : ArrayList<Food> = menu.toCollection(ArrayList<Food>())
                     var menuPopular = menu.toCollection(ArrayList<Food>())
 
-                    //Get current user details if logged in
+                    /*-- Get User Data and Perform Algorithm --*/
                     //Check if logged in
-                    val auth = FirebaseAuth.getInstance()
-                    val currentUser = auth.currentUser
                     if (currentUser != null){
                         //If logged in, do recommendation algorithm, do other menus nonetheless
                         val docRef = odb.collection("user").document(currentUser.email!!)
-                        val user = User()
+                        //val user = User()
                         docRef.get().addOnSuccessListener { document ->
                             if (document.exists()){
                                 user.gender = document["gender"].toString()
@@ -56,10 +85,12 @@ class MainActivityViewModel : ViewModel() {
                                 user.prefer_not = document["prefer_not"].toString()
                                 user.staple_weight = document["staple_weight"].toString().split(",").map{it.toFloat()}.toMutableList()
                                 user.protein_weight = document["protein_weight"].toString().split(",").map {it.toFloat()}.toMutableList()
+                                user.bookmark = document["bookmark"].toString().split(",").map {it.toInt()}.toMutableList()
+                                user.history = document["history"].toString().split(",").map {it.toInt()}.toMutableList()
 
-                                //Start the calculation for Suggestions
-                                // //Knowledge Based, to set the CB_score of food to -1 if menu.main_ingredient
-                                // //matches user.cant_eat
+                                /*-- Algorithm --*/
+                                //Knowledge - Based
+                                //Set the CB_score of food to -1 if menu.main_ingredient matches user.cant_eat
                                 var CB_score = arrayOfNulls<Float>(menuRecommended.size)
                                 for (i in 0 until menuRecommended.size){
                                     CB_score[i] = 0F
@@ -74,7 +105,7 @@ class MainActivityViewModel : ViewModel() {
                                         }
                                 }
 
-                                // //Content - Based
+                                //Content - Based
                                 val staple_options = listOf<String>("飯", "麵", "餃", "餅", "湯", "麵包", "其他")
                                 val protein_options = listOf<String>("雞肉", "豬肉", "牛肉", "羊肉", "魚肉", "海鮮", "雞蛋", "蔬果", "豆腐")
                                 var staple_vec = arrayOfNulls<Float>(size = 7)
@@ -105,7 +136,7 @@ class MainActivityViewModel : ViewModel() {
                                     }
                                 }
 
-                                // //Collab - Filter
+                                //Collab - Filter
                                 //Firestore database read user-item matrix
                                 var userItemMatrix = mutableListOf<MutableList<Float>>()
                                 var currentUserRow = mutableListOf<Float>()
@@ -116,7 +147,6 @@ class MainActivityViewModel : ViewModel() {
                                 odb.collection("user_item_matrix").get()
                                     .addOnSuccessListener { results->
                                         for (document in results) {
-                                            //Log.d("prediction", document["CF_score"].toString())
                                             if (document.id != currentUser.email) {
                                                 val index = userItemMatrix.size
                                                 userItemMatrix.add(document["CF_score"].toString().split(",").map { it.toFloat() }.toMutableList())
@@ -147,7 +177,6 @@ class MainActivityViewModel : ViewModel() {
                                                 value = (currentUserRow[i]-RAmean).toFloat()
                                             }
                                             calcTableA[0].add(value)
-                                            //Log.d("prediction", "calcTableA[0]["+i+"] " + value)
                                             calcTableA[1].add(if (value > -50F) value.pow(2) else value)
                                         }
 
@@ -170,7 +199,6 @@ class MainActivityViewModel : ViewModel() {
                                                         value = (nextUser[i] - RBmean).toFloat()
                                                     }
                                                     calcTableB[0].add(value)
-                                                    //Log.d("prediction", "calcTableB[0]["+i+"] " + value)
                                                     calcTableB[1].add(
                                                         if (value > -50F) value.pow(
                                                             2
@@ -186,30 +214,27 @@ class MainActivityViewModel : ViewModel() {
                                                         val simOfAB = sim(calcTableA, calcTableB)
                                                         predTop += (simOfAB * (nextUser[i] - RBmean)).toFloat()
                                                         predBtm += simOfAB
-                                                        //Log.d("prediction", "simofA"+index + " " + simOfAB + ", " + RBmean)
                                                     }
                                                 }
                                             }
-                                            //only update prediction for current user non-rated items (<= 0)
+                                            //Only update prediction for current user non-rated items (<= 0)
                                             if (currentUserRow[i] <= 0){
                                                 prediction[i] = (RAmean + predTop/predBtm).toFloat()
-                                                Log.d("prediction", prediction[i].toString() + " " + i)}
-                                            //else Log.d("prediction", currentUserRow.to)
+                                            }
                                         }
                                     }
 
-                                // //Recommendation
+                                //Recommendation
                                 for (i in 0 until menuRecommended.size){
                                     if (CB_score[i]!! >= 0F)
                                     menuRecommended[i].score = ( 0.7*CB_score[i]!! + 0.3*prediction[i]!! ).toFloat()
-                                    Log.d("debug", menuRecommended[i].menu_id)
                                 }
                                 menuRecommended.sortByDescending { it.score }
                             }
                         }
                     }
                     else{
-                        //If not logged in, recommended change to login reminder
+                        //If not logged in, recommended change to login reminder (will not be shown, but there'll be a checking done to show a popup message)
                         menuRecommended = arrayListOf(Food(name = "Login to view!"))
                     }
 
@@ -241,9 +266,10 @@ class MainActivityViewModel : ViewModel() {
                     //Other
                     listOfLists.add(menu.filter { it-> it.staple == "其他" } as ArrayList<Food>)
 
-                    //postValue is used to tell main activity this thread is done
+                    //PostValue is used to tell main activity this thread is done and return the lists
                     mLiveData.postValue(listOfLists)
-
+                    //Tell main activity that this thread has finished getting data and return the data
+                    mUserLiveData.postValue(user)
                 }
                 .addOnFailureListener { exception ->
                     Log.d("User", "Exception " + exception)
