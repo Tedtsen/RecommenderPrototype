@@ -1,12 +1,18 @@
 package com.example.recommenderprototype
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.Toast
+import androidx.core.content.res.ComplexColorCompat.inflate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
@@ -15,6 +21,9 @@ import com.example.recommenderprototype.database.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_food_details.*
+import kotlinx.android.synthetic.main.nutrition_information_edit_dialog.*
+import kotlinx.android.synthetic.main.nutrition_information_edit_dialog.view.*
+import java.util.zip.Inflater
 
 class FoodDetailsFragment : Fragment() {
     override fun onCreateView(
@@ -34,8 +43,12 @@ class FoodDetailsFragment : Fragment() {
         val user = bundle.getParcelable<User>("user")!!
         detailsFoodName.text = selectedFood.name
         detailsFoodPrice.text = selectedFood.price.toString()
-        //detailsFoodRestaurant.text = selectedFood.rest_id
+        detailsFoodRestaurant.text = selectedFood.rest_id
         foodTypeValTextView.text = selectedFood.staple
+        calorieValTextView.text =  selectedFood.calorie.toString()
+        starchValTextView.text = selectedFood.starch.toString()
+        proteinValTextView.text = selectedFood.protein.toString()
+        fatValTextView.text = selectedFood.fat.toString()
 
         //Init bookmark drawable first
         if (selectedFood.bookmark == true) {
@@ -80,6 +93,40 @@ class FoodDetailsFragment : Fragment() {
                 }
             }
 
+            //Edit button on click listener, show dialog
+            nutritionInformationTextView.setOnClickListener {
+                //Edit nutrition information
+                val builder = AlertDialog.Builder(this.context)
+                val view = layoutInflater.inflate(R.layout.nutrition_information_edit_dialog,null)
+                builder.setView(view)
+                    .setTitle(getString(R.string.food_details_edit_title))
+                    .setMessage(getString(R.string.food_details_edit_description))
+                    .setNegativeButton(getString(R.string.profile_feedback_cancel), DialogInterface.OnClickListener { dialog, which ->  })
+                    .setPositiveButton(getString(R.string.profile_settings_submit), DialogInterface.OnClickListener { dialog, which ->
+                        if (view.calorieEditText.checkIfEmpty() == false)
+                            selectedFood.calorie = view.calorieEditText.text.toString().toInt()
+                        if (view.starchEditText.checkIfEmpty() == false)
+                            selectedFood.starch = view.starchEditText.text.toString().toInt()
+                        if (view.proteinEditText.checkIfEmpty() == false)
+                            selectedFood.protein = view.proteinEditText.text.toString().toInt()
+                        if (view.fatEditText.checkIfEmpty() == false)
+                            selectedFood.fat = view.fatEditText.text.toString().toInt()
+
+                        calorieValTextView.text = selectedFood.calorie.toString()
+                        starchValTextView.text = selectedFood.starch.toString()
+                        proteinValTextView.text = selectedFood.protein.toString()
+                        fatValTextView.text = selectedFood.fat.toString()
+
+                        odb.collection("food_test").document(selectedFood.menu_id).update(
+                            "calorie" , selectedFood.calorie,
+                            "starch" , selectedFood.starch,
+                            "protein" , selectedFood.protein,
+                            "fat" , selectedFood.fat
+                        )
+                    })
+                builder.show()
+            }
+
             //Record the matrix_index of selected food into user history
             user.history.add(selectedFood.matrix_index)
             odb.collection("user").document(userEmail).update("history", user.history.joinToString(separator = ","))
@@ -88,6 +135,9 @@ class FoodDetailsFragment : Fragment() {
         else{
             bookmarkButton.setOnCheckedChangeListener { buttonView, isChecked ->
                 Toast.makeText(context, getString(R.string.food_details_login_to_bookmark), Toast.LENGTH_SHORT).show()
+            }
+            nutritionInformationTextView.setOnClickListener{
+                Toast.makeText(context, getString(R.string.food_details_login_to_edit), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -117,6 +167,33 @@ class FoodDetailsFragment : Fragment() {
     override fun onResume() {
         detailsFoodRestaurant.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_assignment_soft_blue_24dp, 0)
         super.onResume()
+    }
+
+    private fun EditText.checkIfEmpty() : Boolean{
+        var isEmpty = false
+        if (this@checkIfEmpty.text.toString().trim().equals("",ignoreCase = true)){
+            this@checkIfEmpty.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_error_soft_red_24dp, 0)
+            isEmpty = true
+        }
+        this.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (this@checkIfEmpty.text.toString().trim().equals("",ignoreCase = true)){
+                    this@checkIfEmpty.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_error_soft_red_24dp, 0)
+                    isEmpty = true
+                }
+                else{
+                    this@checkIfEmpty.setCompoundDrawables(null,null,null,null)
+                    isEmpty = false
+                }
+            }
+        })
+        return isEmpty
     }
 }
 

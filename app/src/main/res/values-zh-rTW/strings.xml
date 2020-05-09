@@ -33,10 +33,19 @@
     <string name="food_details_starch">澱粉</string>
     <string name="food_details_protein">蛋白質</string>
     <string name="food_details_fat">脂肪</string>
+    <string name="food_details_calorie_with_unit">卡路里 kcal</string>
+    <string name="food_details_starch_with_unit">澱粉 g</string>
+    <string name="food_details_protein_with_unit">蛋白質 g</string>
+    <string name="food_details_fat_with_unit">脂肪 g</string>
     /* Food Details Message */
     <string name="food_details_bookmarked">已收藏!</string>
     <string name="food_details_remove_bookmark">移除收藏!</string>
     <string name="food_details_login_to_bookmark">登錄後才能收藏！</string>
+    <string name="food_details_login_to_edit">登錄後才能編輯！</string>
+    <string name="food_details_edit_title">編輯食物營養資訊</string>
+    <string name="food_details_edit_description">&#8226; 任何人都能編輯此資料，但前提是使用者能保證資料能達到某程度的準確性。
+        \n&#8226; 資料將用於 “營養專區” 之計算與顯示。
+        \n&#8226; 感謝你所貢獻的資料，但也請謝絕濫用。</string>
 
     <!-- Restaurant Details Fragment -->
     <string name="restaurant_details_restaurant_menu">餐廳菜單</string>

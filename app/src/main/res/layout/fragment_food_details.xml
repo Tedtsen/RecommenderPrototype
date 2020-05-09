@@ -104,15 +104,17 @@
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:drawableEnd="@drawable/ic_edit_grey_24dp"
+                android:drawablePadding="4dp" />
 
             <TextView
-                android:id="@+id/calorieTextView"
+                android:id="@+id/detailsCalorieTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="12dp"
-                android:text="@string/food_details_calorie"
+                android:text="@string/food_details_calorie_with_unit"
                 android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/nutritionInformationTextView" />
@@ -123,8 +125,8 @@
                 android:layout_height="wrap_content"
                 android:text=":"
                 android:textSize="20sp"
-                app:layout_constraintStart_toEndOf="@id/calorieTextView"
-                app:layout_constraintTop_toTopOf="@id/calorieTextView"
+                app:layout_constraintStart_toEndOf="@id/detailsCalorieTextView"
+                app:layout_constraintTop_toTopOf="@id/detailsCalorieTextView"
                 android:layout_marginStart="14dp"/>
 
             <TextView
@@ -135,16 +137,16 @@
                 android:text="TextView"
                 android:textSize="20sp"
                 app:layout_constraintStart_toEndOf="@id/calorieColon"
-                app:layout_constraintTop_toTopOf="@id/calorieTextView" />
+                app:layout_constraintTop_toTopOf="@id/detailsCalorieTextView" />
 
             <TextView
-                android:id="@+id/starchTextView"
+                android:id="@+id/detailsStarchTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/food_details_starch"
+                android:text="@string/food_details_starch_with_unit"
                 android:textSize="20sp"
-                app:layout_constraintStart_toStartOf="@id/calorieTextView"
-                app:layout_constraintTop_toBottomOf="@id/calorieTextView" />
+                app:layout_constraintStart_toStartOf="@id/detailsCalorieTextView"
+                app:layout_constraintTop_toBottomOf="@id/detailsCalorieTextView" />
 
             <TextView
                 android:id="@+id/starchColon"
@@ -153,7 +155,7 @@
                 android:text=":"
                 android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="@+id/calorieColon"
-                app:layout_constraintTop_toTopOf="@id/starchTextView" />
+                app:layout_constraintTop_toTopOf="@id/detailsStarchTextView" />
 
             <TextView
                 android:id="@+id/starchValTextView"
@@ -165,13 +167,13 @@
                 app:layout_constraintTop_toBottomOf="@id/calorieValTextView" />
 
             <TextView
-                android:id="@+id/proteinTextView"
+                android:id="@+id/detailsProteinTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/food_details_protein"
+                android:text="@string/food_details_protein_with_unit"
                 android:textSize="20sp"
-                app:layout_constraintStart_toStartOf="@id/starchTextView"
-                app:layout_constraintTop_toBottomOf="@id/starchTextView" />
+                app:layout_constraintStart_toStartOf="@id/detailsStarchTextView"
+                app:layout_constraintTop_toBottomOf="@id/detailsStarchTextView" />
 
             <TextView
                 android:id="@+id/proteinColon"
@@ -180,7 +182,7 @@
                 android:text=":"
                 android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="@+id/calorieColon"
-                app:layout_constraintTop_toTopOf="@id/proteinTextView" />
+                app:layout_constraintTop_toTopOf="@id/detailsProteinTextView" />
 
             <TextView
                 android:id="@+id/proteinValTextView"
@@ -192,13 +194,13 @@
                 app:layout_constraintTop_toBottomOf="@id/starchValTextView" />
 
             <TextView
-                android:id="@+id/fatTextView"
+                android:id="@+id/detailsFatTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/food_details_fat"
+                android:text="@string/food_details_fat_with_unit"
                 android:textSize="20sp"
-                app:layout_constraintStart_toStartOf="@id/proteinTextView"
-                app:layout_constraintTop_toBottomOf="@id/proteinTextView" />
+                app:layout_constraintStart_toStartOf="@id/detailsProteinTextView"
+                app:layout_constraintTop_toBottomOf="@id/detailsProteinTextView" />
 
             <TextView
                 android:id="@+id/fatColon"
@@ -207,7 +209,7 @@
                 android:text=":"
                 android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="@+id/calorieColon"
-                app:layout_constraintTop_toTopOf="@id/fatTextView" />
+                app:layout_constraintTop_toTopOf="@id/detailsFatTextView" />
 
             <TextView
                 android:id="@+id/fatValTextView"
@@ -227,7 +229,7 @@
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/fatTextView" />
+                app:layout_constraintTop_toBottomOf="@id/detailsFatTextView" />
 
             <ListView
                 android:id="@+id/mainIngredientsListView"
@@ -250,7 +252,7 @@
                 android:layout_marginTop="24dp"
                 android:text="@string/food_details_food_type"
                 android:textSize="20sp"
-                app:layout_constraintStart_toStartOf="@id/fatTextView"
+                app:layout_constraintStart_toStartOf="@id/detailsFatTextView"
                 app:layout_constraintTop_toBottomOf="@id/mainIngredientsListView" />
 
             <TextView

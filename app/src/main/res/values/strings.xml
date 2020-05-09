@@ -32,10 +32,19 @@
     <string name="food_details_starch">Starch</string>
     <string name="food_details_protein">Protein</string>
     <string name="food_details_fat">Fat</string>
+    <string name="food_details_calorie_with_unit">Calorie kcal</string>
+    <string name="food_details_starch_with_unit">Starch g</string>
+    <string name="food_details_protein_with_unit">Protein g</string>
+    <string name="food_details_fat_with_unit">Fat g</string>
     /* Food Details Message */
     <string name="food_details_bookmarked">Bookmarked!</string>
     <string name="food_details_remove_bookmark">Bookmark Removed!</string>
     <string name="food_details_login_to_bookmark">Please Login To Bookmark!</string>
+    <string name="food_details_login_to_edit">Please Login to Edit!</string>
+    <string name="food_details_edit_title">Edit Nutrition Info</string>
+    <string name="food_details_edit_description">&#8226; Anyone is free to edit as long as the user can guarantee that his/her information is accurate to a certain degree.
+        \n&#8226; The info here is used to calculate and display food in the "Nutrition" category.
+        \n&#8226; Please don\'t abuse and thanks for providing the info. </string>
 
     <!-- Restaurant Details Fragment -->
     <string name="restaurant_details_restaurant_menu">Restaurant Menu</string>
