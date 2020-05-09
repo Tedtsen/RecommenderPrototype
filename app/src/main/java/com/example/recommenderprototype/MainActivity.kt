@@ -220,9 +220,11 @@ class MainActivity : AppCompatActivity() {
         val selectedItemId: Int = bottomNavigationView.selectedItemId
         val profileSettingsFragmentSelected = supportFragmentManager.findFragmentByTag("PROFILE_SETTINGS_FRAGMENT_TAG")
         val foodDetailsFragmentSelected = supportFragmentManager.findFragmentByTag("FOOD_DETAILS_FRAGMENT_TAG")
-        if (selectedItemId != R.id.menu_home && profileSettingsFragmentSelected == null && foodDetailsFragmentSelected == null) {
+        val miscListsFragmentSelected = supportFragmentManager.findFragmentByTag("MISC_LISTS_FRAGMENT_TAG")
+        if (selectedItemId != R.id.menu_home && profileSettingsFragmentSelected == null
+            && foodDetailsFragmentSelected == null && miscListsFragmentSelected == null) {
             //if current fragment NOT HOME, profile SETTINGS fragment NOT SELECTED,
-            //food details in search fragment NOT SELECTED go back to home
+            //food details in search fragment NOT SELECTED, misc lists fragment NOT SELECTED go back to home
             bottomNavigationView.selectedItemId = R.id.menu_home
             supportFragmentManager.popBackStack()
         }

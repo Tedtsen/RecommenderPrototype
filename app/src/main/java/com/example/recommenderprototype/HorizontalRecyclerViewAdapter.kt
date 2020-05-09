@@ -1,9 +1,10 @@
 package com.example.recommenderprototype
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.ViewPropertyAnimatorListenerAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.recommenderprototype.database.Food
@@ -11,7 +12,7 @@ import com.example.recommenderprototype.database.User
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.category_row.view.*
-import kotlinx.android.synthetic.main.content_main.*
+
 
 class HorizontalRecyclerViewAdapter(val categories: List<String>, foodGridRecyclerView: RecyclerView, listOfLists : List<List<Food>>, inputUser : User) :
     RecyclerView.Adapter<HorizontalRecyclerViewAdapter.ViewHolder>() {
@@ -87,5 +88,6 @@ class HorizontalRecyclerViewAdapter(val categories: List<String>, foodGridRecycl
             adapter = FoodRowAdapter(lists[listIndex], user)
         }
         notifyDataSetChanged()
+        mainRV.scheduleLayoutAnimation()
     }
 }
