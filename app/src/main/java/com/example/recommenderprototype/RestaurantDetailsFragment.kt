@@ -40,11 +40,13 @@ class RestaurantDetailsFragment : Fragment() {
         detailsRestaurantName.text = selectedRestaurant.name
         val operatingHoursFormatted = selectedRestaurant.operating_hours.split("_")
         var operatingHoursFinal : String = ""
-        operatingHoursFormatted.forEachIndexed{ index, it ->
-            if (index == 0)
-                operatingHoursFinal += it[0].toString() + it[1].toString() + ":" + it[2].toString() + it[3].toString() + "-" + it[4].toString() + it[5].toString() + ":" + it[6].toString() + it[7].toString()
-            else
-                operatingHoursFinal += " " + it[0].toString() + it[1].toString() + ":" + it[2].toString() + it[3].toString() + "-" + it[4].toString() + it[5].toString() + ":" + it[6].toString() + it[7].toString()
+        if (selectedRestaurant.operating_hours != "") {
+            operatingHoursFormatted.forEachIndexed { index, it ->
+                if (index == 0)
+                    operatingHoursFinal += it[0].toString() + it[1].toString() + ":" + it[2].toString() + it[3].toString() + "-" + it[4].toString() + it[5].toString() + ":" + it[6].toString() + it[7].toString()
+                else
+                    operatingHoursFinal += " " + it[0].toString() + it[1].toString() + ":" + it[2].toString() + it[3].toString() + "-" + it[4].toString() + it[5].toString() + ":" + it[6].toString() + it[7].toString()
+            }
         }
         detailsRestaurantOperatingHours.text = operatingHoursFinal
 
