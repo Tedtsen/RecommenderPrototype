@@ -8,18 +8,20 @@ import androidx.core.view.ViewPropertyAnimatorListenerAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.recommenderprototype.database.Food
+import com.example.recommenderprototype.database.Restaurant
 import com.example.recommenderprototype.database.User
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.category_row.view.*
 
 
-class HorizontalRecyclerViewAdapter(val categories: List<String>, foodGridRecyclerView: RecyclerView, listOfLists : List<List<Food>>, inputUser : User) :
+class HorizontalRecyclerViewAdapter(val categories: List<String>, foodGridRecyclerView: RecyclerView, listOfLists : List<List<Food>>, inputUser : User, inputRestaurantList : ArrayList<Restaurant>) :
     RecyclerView.Adapter<HorizontalRecyclerViewAdapter.ViewHolder>() {
 
     val mainRV = foodGridRecyclerView
     val lists = listOfLists
     val user = inputUser
+    val restaurantList = inputRestaurantList
     var selectedPosition = 0
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view){
@@ -85,7 +87,8 @@ class HorizontalRecyclerViewAdapter(val categories: List<String>, foodGridRecycl
         mainRV.apply {
             selectedPosition = position
             layoutManager = LinearLayoutManager(holder.itemView.context)
-            adapter = FoodRowAdapter(lists[listIndex], user)
+            //Always pass the whole list, if listIndex is passed, then select correct category list in FoodRowAdapter
+            adapter = FoodRowAdapter(lists[0], user, restaurantList as List<Restaurant>, listIndex, lists as ArrayList<ArrayList<Food>>)
         }
         notifyDataSetChanged()
         mainRV.scheduleLayoutAnimation()

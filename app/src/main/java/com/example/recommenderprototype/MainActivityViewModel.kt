@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recommenderprototype.database.Food
+import com.example.recommenderprototype.database.Restaurant
 import com.example.recommenderprototype.database.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -17,6 +18,7 @@ import kotlin.math.sqrt
 class MainActivityViewModel : ViewModel() {
     val mLiveData = MutableLiveData<ArrayList<ArrayList<Food>>>()
     val mUserLiveData = MutableLiveData<User>()
+    val mRestaurantListLiveData = MutableLiveData<ArrayList<Restaurant>>()
     val user = User()
 
     fun fetchData() {
@@ -26,8 +28,18 @@ class MainActivityViewModel : ViewModel() {
             val odb: FirebaseFirestore = FirebaseFirestore.getInstance()
             val menu = ArrayList<Food>()
             var listOfLists = arrayListOf<ArrayList<Food>>()
+            val restaurantList = ArrayList<Restaurant>()
 
-            //Firestore database read function
+            //Firestore restaurant database read function
+            odb.collection("restaurant").get()
+                .addOnSuccessListener { results ->
+                    for (document in results){
+                        restaurantList.add(document.toObject(Restaurant::class.java))
+                    }
+                    mRestaurantListLiveData.postValue(restaurantList)
+                }
+
+            //Firestore food database read function
             odb.collection("food_test").get()
                 .addOnSuccessListener { results ->
 

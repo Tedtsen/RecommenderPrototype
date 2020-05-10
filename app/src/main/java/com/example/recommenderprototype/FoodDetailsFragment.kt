@@ -3,6 +3,7 @@ package com.example.recommenderprototype
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.os.Parcelable
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -11,21 +12,32 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.res.ComplexColorCompat.inflate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import com.example.recommenderprototype.database.Food
+import com.example.recommenderprototype.database.Restaurant
 import com.example.recommenderprototype.database.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.fragment_food_details.*
+import kotlinx.android.synthetic.main.fragment_food_details.view.*
 import kotlinx.android.synthetic.main.nutrition_information_edit_dialog.*
 import kotlinx.android.synthetic.main.nutrition_information_edit_dialog.view.*
 import java.util.zip.Inflater
 
 class FoodDetailsFragment : Fragment() {
+
+    @Parcelize
+    data class RestaurantListParcel (val restaurantList : ArrayList<Restaurant> = ArrayList<Restaurant>()) : Parcelable
+
+    @Parcelize
+    data class MenuParcel (val menu : ArrayList<Food> = ArrayList<Food>()) : Parcelable
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -41,14 +53,42 @@ class FoodDetailsFragment : Fragment() {
         val selectedFood : Food = bundle!!.getParcelable<Food>("selectedFood")!!
         val menuSizeParcel  = bundle.getParcelable<FoodRowAdapter.CountParcel>("menuSize")!!
         val user = bundle.getParcelable<User>("user")!!
+        val restaurantList = bundle.getParcelable<FoodRowAdapter.RestaurantListParcel>("restaurantList")!!.restaurantList
+        val menu = bundle.getParcelable<FoodRowAdapter.MenuFullParcel>("menuFull")!!.menu
         detailsFoodName.text = selectedFood.name
         detailsFoodPrice.text = selectedFood.price.toString()
-        detailsFoodRestaurant.text = selectedFood.rest_id
+        detailsFoodRestaurant.text = restaurantList.filter { it.restaurant_id ==  selectedFood.restaurant_id}.first().name
         foodTypeValTextView.text = selectedFood.staple
         calorieValTextView.text =  selectedFood.calorie.toString()
         starchValTextView.text = selectedFood.starch.toString()
         proteinValTextView.text = selectedFood.protein.toString()
         fatValTextView.text = selectedFood.fat.toString()
+
+        val mFragment = (context as FragmentActivity).supportFragmentManager.findFragmentByTag("RESTAURANT_DETAILS_FRAGMENT_TAG")
+        if (mFragment != null) {
+            //if Restaurant fragment was created, take away the drawable and doesn't allow click
+            detailsFoodRestaurant.setCompoundDrawablesRelativeWithIntrinsicBounds(0,0,0,0)
+        }
+        //else if Restaurant fragment doesn't exist, allow creation of Restaurant fragment
+        detailsFoodRestaurant.setOnClickListener {
+            val mFragment = (context as FragmentActivity).supportFragmentManager.findFragmentByTag("RESTAURANT_DETAILS_FRAGMENT_TAG")
+            if (mFragment == null) {
+                val bundle = Bundle()
+                bundle.putParcelable("restaurantList", RestaurantListParcel(restaurantList))
+                bundle.putParcelable("selectedRestaurant", restaurantList.filter { it.restaurant_id == selectedFood.restaurant_id }.first())
+                bundle.putParcelable("menu", MenuParcel(menu))
+                bundle.putParcelable("user", user)
+                val restaurantDetailsFragment = RestaurantDetailsFragment()
+                restaurantDetailsFragment.arguments = bundle
+
+                val transaction =
+                    (context as FragmentActivity).supportFragmentManager.beginTransaction()
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                transaction.add(R.id.containerFullscreen, restaurantDetailsFragment, "RESTAURANT_DETAILS_FRAGMENT_TAG")
+                transaction.addToBackStack("RESTAURANT_DETAILS_FRAGMENT_TAG")
+                transaction.commit()
+            }
+        }
 
         //Init bookmark drawable first
         if (selectedFood.bookmark == true) {
@@ -141,32 +181,9 @@ class FoodDetailsFragment : Fragment() {
             }
         }
 
-        val mFragment = (context as FragmentActivity).supportFragmentManager.findFragmentByTag("RESTAURANT_DETAILS_FRAGMENT_TAG")
-        if (mFragment != null) {
-            //if Restaurant fragment was created, take away the drawable and doesn't allow click
-            detailsFoodRestaurant.setCompoundDrawables(null, null, null, null)
-        }
-            //else if Restaurant fragment doesn't exist, allow creation of Restaurant fragment
-            detailsFoodRestaurant.setOnClickListener {
-                val mFragment = (context as FragmentActivity).supportFragmentManager.findFragmentByTag("RESTAURANT_DETAILS_FRAGMENT_TAG")
-                if (mFragment == null) {
-                    val transaction =
-                        (context as FragmentActivity).supportFragmentManager.beginTransaction()
-                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    transaction.add(R.id.containerFullscreen, RestaurantDetailsFragment(), "RESTAURANT_DETAILS_FRAGMENT_TAG")
-                    transaction.addToBackStack("RESTAURANT_DETAILS_FRAGMENT_TAG")
-                    transaction.commit()
-                }
-            }
-
         mainIngredientsListView.apply {
             adapter = ArrayAdapter(this.context, android.R.layout.simple_list_item_1, selectedFood.main_ingredient.chunked(size = 2))
         }
-    }
-
-    override fun onResume() {
-        detailsFoodRestaurant.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_assignment_soft_blue_24dp, 0)
-        super.onResume()
     }
 
     private fun EditText.checkIfEmpty() : Boolean{

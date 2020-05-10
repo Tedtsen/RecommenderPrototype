@@ -10,10 +10,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground">
+
             <ImageView
                 android:id="@+id/gridFoodImage"
                 android:layout_width="128dp"
@@ -26,35 +28,43 @@
 
             <TextView
                 android:id="@+id/gridFoodName"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Name"
-                android:textAlignment="center"
-                android:textSize="24sp"
-                app:layout_constraintTop_toTopOf="parent"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:paddingStart="16dp"
                 android:paddingTop="16dp"
-                app:layout_constraintStart_toEndOf="@id/gridFoodImage" />
+                android:paddingEnd="16dp"
+                android:text="Name"
+                android:textAlignment="textStart"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/gridFoodImage"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/gridFoodPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingStart="24dp"
                 android:text="Price"
                 android:textAlignment="center"
                 android:textSize="20sp"
-                android:paddingStart="24dp"
                 app:layout_constraintStart_toEndOf="@id/gridFoodImage"
                 app:layout_constraintTop_toBottomOf="@id/gridFoodName" />
 
             <TextView
                 android:id="@+id/gridFoodRestaurant"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Restaurant"
-                android:textAlignment="center"
-                android:textSize="20sp"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:text="Restaurant"
+                android:textAlignment="textStart"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/gridFoodImage"
                 app:layout_constraintTop_toBottomOf="@id/gridFoodPrice" />
 

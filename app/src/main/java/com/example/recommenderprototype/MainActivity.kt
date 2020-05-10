@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.recommenderprototype.database.Food
+import com.example.recommenderprototype.database.Restaurant
 import com.example.recommenderprototype.database.User
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
@@ -33,6 +34,11 @@ class MainActivity : AppCompatActivity() {
     val MY_REQUEST_CODE : Int = 1212
     lateinit var mViewModel: MainActivityViewModel
     private lateinit var auth: FirebaseAuth
+
+    @Parcelize
+    data class RestaurantListParcel (var restaurantList : ArrayList<Restaurant> = ArrayList<Restaurant>()) : Parcelable
+    private var mRestaurantListParcel = RestaurantListParcel()
+
     //global firestore food collection count var
     @Parcelize
     data class CountParcel (var foodCount : Int = -1) : Parcelable
@@ -53,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         val runnable = Runnable() {
             kotlin.run { dialog.dismiss() }
         }
-        handler.postDelayed(runnable, 2000)
+        handler.postDelayed(runnable, 3000)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,27 +74,32 @@ class MainActivity : AppCompatActivity() {
         mViewModel.mUserLiveData.observe(this, Observer {
             user = mViewModel.mUserLiveData.value!!
 
-            //If user personal info reading is done, observe if the calculation of recommendation is done
-            mViewModel.mLiveData.observe(this, Observer {
-                val listOfLists = mViewModel.mLiveData.value!!
-                //Update foodCount, so we can use in profile settings to create user-matrix columns
-                mCountParcel.foodCount = listOfLists[0].size
-                mListsParcel.listOfLists = listOfLists
+            //Oberserve if all restaurant data is obtained
+            mViewModel.mRestaurantListLiveData.observe(this, Observer {
+                mRestaurantListParcel.restaurantList = mViewModel.mRestaurantListLiveData.value!!
 
-                //Food Grid, populate the first recycler view
-                foodGridRecyclerView.apply {
-                    layoutManager = LinearLayoutManager(this@MainActivity)
-                    adapter = FoodRowAdapter(mViewModel.mLiveData.value!![0], user)
-                }
+                //If user personal info reading is done, observe if the calculation of recommendation is done
+                mViewModel.mLiveData.observe(this, Observer {
+                    val listOfLists = mViewModel.mLiveData.value!!
+                    //Update foodCount, so we can use in profile settings to create user-matrix columns
+                    mCountParcel.foodCount = listOfLists[0].size
+                    mListsParcel.listOfLists = listOfLists
 
-                val categories = resources.getStringArray(R.array.categories).toList()
-                horizontalRecyclerView.apply {
-                    layoutManager = LinearLayoutManager(this@MainActivity, RecyclerView.HORIZONTAL, false)
-                    adapter = HorizontalRecyclerViewAdapter(categories, foodGridRecyclerView, listOfLists, user)
-                }
+                    //Food Grid, populate the first recycler view
+                    foodGridRecyclerView.apply {
+                        layoutManager = LinearLayoutManager(this@MainActivity)
+                        adapter = FoodRowAdapter(mViewModel.mLiveData.value!![0], user, mRestaurantListParcel.restaurantList)
+                    }
 
-                //Remove loading icon
-                progressBar2.visibility = View.GONE
+                    val categories = resources.getStringArray(R.array.categories).toList()
+                    horizontalRecyclerView.apply {
+                        layoutManager = LinearLayoutManager(this@MainActivity, RecyclerView.HORIZONTAL, false)
+                        adapter = HorizontalRecyclerViewAdapter(categories, foodGridRecyclerView, listOfLists, user, mRestaurantListParcel.restaurantList)
+                    }
+
+                    //Remove loading icon
+                    progressBar2.visibility = View.GONE
+                })
             })
         })
 
@@ -106,6 +117,7 @@ class MainActivity : AppCompatActivity() {
                         val bundle = Bundle()
                         bundle.putParcelable("menu", mListsParcel)
                         bundle.putParcelable("user", user)
+                        bundle.putParcelable("restaurantList", mRestaurantListParcel)
                         val searchFragment = SearchFragment()
                         searchFragment.arguments = bundle
                         loadFragment(searchFragment, "SEARCH_FRAGMENT_TAG", fullscreen = false)
@@ -130,6 +142,7 @@ class MainActivity : AppCompatActivity() {
                             val bundle = Bundle()
                             bundle.putParcelable("listOfLists", mListsParcel)
                             bundle.putParcelable("user", user)
+                            bundle.putParcelable("restaurantList", mRestaurantListParcel)
                             val profileFragment = ProfileFragment()
                             profileFragment.arguments = bundle
                             supportFragmentManager.popBackStack()
@@ -164,6 +177,7 @@ class MainActivity : AppCompatActivity() {
                                 val bundle = Bundle()
                                 bundle.putParcelable("listOfLists", mListsParcel)
                                 bundle.putParcelable("user", user)
+                                bundle.putParcelable("restaurantList", mRestaurantListParcel)
                                 val profileFragment = ProfileFragment()
                                 profileFragment.arguments = bundle
                                 supportFragmentManager.popBackStack()

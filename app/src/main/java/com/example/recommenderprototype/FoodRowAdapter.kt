@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
 import com.example.recommenderprototype.database.Food
+import com.example.recommenderprototype.database.Restaurant
 import com.example.recommenderprototype.database.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -23,18 +24,39 @@ class FoodRowAdapter() :
     private var menuFull = ArrayList<Food>()
     private var menu = ArrayList<Food>()
     private var user = User()
+    private var restaurantList = ArrayList<Restaurant>()
+
     @Parcelize
     data class CountParcel (val size : Int = -1) : Parcelable
 
-    constructor( inputMenu: List<Food>, inputUser : User) : this() {
+    @Parcelize
+    data class RestaurantListParcel (val restaurantList : ArrayList<Restaurant> = ArrayList<Restaurant>()) : Parcelable
+
+    @Parcelize
+    data class MenuFullParcel (val menu : ArrayList<Food> = ArrayList<Food>()) : Parcelable
+
+    constructor( originalMenu: List<Food>, inputUser : User, inputRestaurantList: List<Restaurant>,
+                 //For category selection
+                 categoryIndex : Int? = null, listOfLists : ArrayList<ArrayList<Food>>? = null,
+                 //For misc lists
+                 listToApply : ArrayList<Food>? = null) : this() {
+
         this.user = inputUser
-        this.menu = ArrayList<Food>(inputMenu)
-        menuFull = ArrayList(inputMenu)
+        this.restaurantList = ArrayList<Restaurant>(inputRestaurantList)
+        //If this is not category selection from HorizontalRecyclerViewAdapter
+        if (categoryIndex == null) {
+            if (listToApply == null)
+                this.menu = ArrayList<Food>(originalMenu)
+            else this.menu = listToApply
+        }
+        else this.menu = listOfLists!![categoryIndex]
+        menuFull = ArrayList<Food>(originalMenu)
     }
 
     class GridViewHolder(view: View) : RecyclerView.ViewHolder(view){
         val title : TextView = itemView.findViewById(R.id.gridFoodName)
         val price : TextView = itemView.findViewById(R.id.gridFoodPrice)
+        val restaurantName : TextView = itemView.findViewById(R.id.gridFoodRestaurant)
         val image : ImageView = itemView.findViewById(R.id.gridFoodImage)
     }
 
@@ -45,7 +67,12 @@ class FoodRowAdapter() :
 
     override fun getItemCount() = menu.size
 
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
     override fun onBindViewHolder(holder: FoodRowAdapter.GridViewHolder, position: Int) {
+
         holder.itemView.setOnClickListener{
             //Update user weight on Firestore after click
             val odb = FirebaseFirestore.getInstance()
@@ -104,19 +131,34 @@ class FoodRowAdapter() :
             bundle.putParcelable("selectedFood", menu[position])
             bundle.putParcelable("menuSize", CountParcel(size = menu.size))
             bundle.putParcelable("user", user)
+            bundle.putParcelable("restaurantList", RestaurantListParcel(restaurantList = restaurantList))
+            bundle.putParcelable("menuFull", MenuFullParcel(menu = menuFull))
             val foodDetailsFragment = FoodDetailsFragment()
             foodDetailsFragment.arguments = bundle
 
             // load fragment of the selected food
-            val transaction = (holder.itemView.context as FragmentActivity).supportFragmentManager.beginTransaction()
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-            transaction.add(R.id.containerFullscreen, foodDetailsFragment, "FOOD_DETAILS_FRAGMENT_TAG")
-            transaction.addToBackStack("FOOD_DETAILS_FRAGMENT_TAG")
-            transaction.commit()
-
+            val mFragment = (holder.itemView.context as FragmentActivity).supportFragmentManager.findFragmentByTag("FOOD_DETAILS_FRAGMENT_TAG")
+            if (mFragment == null) {
+                val transaction = (holder.itemView.context as FragmentActivity).supportFragmentManager.beginTransaction()
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                transaction.add(R.id.containerFullscreen, foodDetailsFragment, "FOOD_DETAILS_FRAGMENT_TAG")
+                transaction.addToBackStack("FOOD_DETAILS_FRAGMENT_TAG")
+                transaction.commit()
+            }
+            else{
+                val transaction = (holder.itemView.context as FragmentActivity).supportFragmentManager.beginTransaction()
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                transaction.add(R.id.containerFullscreen, foodDetailsFragment, "FOOD_DETAILS_FRAGMENT_TAG2")
+                transaction.addToBackStack("FOOD_DETAILS_FRAGMENT_TAG2")
+                transaction.commit()
+            }
         }
+
+        //Fill the text of TextViews in each row
         holder.title.text = menu[position].name
         holder.price.text = menu[position].price.toString()
+        holder.restaurantName.text = restaurantList.filter { it.restaurant_id == menu[position].restaurant_id }.first().name
+
         if (menu[position].imgurl != "")
         {Picasso.get().load(menu[position].imgurl).into(holder.image)}
     }

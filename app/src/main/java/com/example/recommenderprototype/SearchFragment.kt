@@ -32,7 +32,8 @@ class SearchFragment : Fragment() {
         //Default results
         val listOfLists = arguments!!.getParcelable<MainActivity.ListsParcel>("menu")!!.listOfLists
         val user = arguments!!.getParcelable<User>("user")!!
-        val mAdapter = FoodRowAdapter(listOfLists[0], user)
+        val restaurantList = arguments!!.getParcelable<MainActivity.RestaurantListParcel>("restaurantList")!!.restaurantList
+        val mAdapter = FoodRowAdapter(listOfLists[0], user, restaurantList)
         searchRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = mAdapter

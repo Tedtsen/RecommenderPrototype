@@ -9,7 +9,7 @@ import java.io.Serializable
 @Parcelize
 @Entity
 data class Food(
-    val rest_id: String = "",
+    val restaurant_id: String = "",
     var menu_id: String = "",
     val name: String = "",
     val price: Int = -1,

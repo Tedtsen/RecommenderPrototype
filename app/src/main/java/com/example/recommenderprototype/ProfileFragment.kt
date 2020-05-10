@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.recommenderprototype.database.Food
+import com.example.recommenderprototype.database.Restaurant
 import com.example.recommenderprototype.database.User
 import com.firebase.ui.auth.AuthUI
 import com.google.android.gms.auth.api.Auth
@@ -35,6 +36,8 @@ class ProfileFragment : Fragment() {
     class ListParcel (val list : ArrayList<Food> = arrayListOf(Food())) : Parcelable
     @Parcelize
     class ListTitleParcel (val title : String = "") : Parcelable
+    @Parcelize
+    class RestaurantListParcel (val restaurantList : ArrayList<Restaurant> = ArrayList()) : Parcelable
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,6 +52,7 @@ class ProfileFragment : Fragment() {
 
         val listOfLists = arguments!!.getParcelable<MainActivity.ListsParcel>("listOfLists")!!.listOfLists
         val user = arguments!!.getParcelable<User>("user")!!
+        val restaurantList = arguments!!.getParcelable<MainActivity.RestaurantListParcel>("restaurantList")!!.restaurantList
 
         logoutButton.setOnClickListener {
             AuthUI.getInstance().signOut(this.context!!).addOnSuccessListener {
@@ -69,9 +73,11 @@ class ProfileFragment : Fragment() {
 
             val bookmarkList = listOfLists[0].filter { it.bookmark == true } as ArrayList<Food>
             val bundle = Bundle()
+            bundle.putParcelable("originalList", ListParcel(listOfLists[0]))
             bundle.putParcelable("listToApply", ListParcel(bookmarkList))
             bundle.putParcelable("listTitle", ListTitleParcel(getString(R.string.profile_bookmark)))
             bundle.putParcelable("user", user)
+            bundle.putParcelable("restaurantList", RestaurantListParcel(restaurantList = restaurantList))
             val miscListsFragment = MiscListsFragment()
             miscListsFragment.arguments = bundle
 
@@ -99,9 +105,11 @@ class ProfileFragment : Fragment() {
             }
 
             val bundle = Bundle()
+            bundle.putParcelable("originalList", ListParcel(listOfLists[0]))
             bundle.putParcelable("listToApply", ListParcel(historyList))
             bundle.putParcelable("listTitle", ListTitleParcel(getString(R.string.profile_history)))
             bundle.putParcelable("user", user)
+            bundle.putParcelable("restaurantList", RestaurantListParcel(restaurantList))
             val miscListsFragment = MiscListsFragment()
             miscListsFragment.arguments = bundle
 

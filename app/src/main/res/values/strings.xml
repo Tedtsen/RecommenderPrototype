@@ -40,7 +40,7 @@
     <string name="food_details_bookmarked">Bookmarked!</string>
     <string name="food_details_remove_bookmark">Bookmark Removed!</string>
     <string name="food_details_login_to_bookmark">Please Login To Bookmark!</string>
-    <string name="food_details_login_to_edit">Please Login to Edit!</string>
+    <string name="food_details_login_to_edit">Please Login To Edit!</string>
     <string name="food_details_edit_title">Edit Nutrition Info</string>
     <string name="food_details_edit_description">&#8226; Anyone is free to edit as long as the user can guarantee that his/her information is accurate to a certain degree.
         \n&#8226; The info here is used to calculate and display food in the "Nutrition" category.
