@@ -150,7 +150,6 @@
             android:background="#E8F5E9"
             android:text="@string/profile_settings_submit"
             android:textSize="20sp"
-            app:layout_constraintTop_toBottomOf="@id/preferNotMultiAutoCompleteTextView"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -187,7 +186,10 @@
             android:drawableStart="@drawable/ic_mode_edit_soft_orange_24dp"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/preferMultiAutoCompleteTextView" />
+            app:layout_constraintTop_toBottomOf="@id/preferMultiAutoCompleteTextView"
+            app:layout_constraintBottom_toTopOf="@id/preferNotMultiAutoCompleteTextView"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintVertical_bias="0.0"/>
 
         <MultiAutoCompleteTextView
             android:id="@+id/preferNotMultiAutoCompleteTextView"
@@ -197,7 +199,8 @@
             android:minWidth="250dp"
             android:hint="@string/profile_settings_prefer_not_hint"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/preferNotTextView" />
+            app:layout_constraintTop_toBottomOf="@id/preferNotTextView"
+            app:layout_constraintBottom_toTopOf="@id/submitProfileSettingsButton"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
