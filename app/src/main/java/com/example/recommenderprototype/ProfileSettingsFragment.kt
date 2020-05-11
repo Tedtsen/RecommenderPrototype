@@ -267,6 +267,8 @@ class ProfileSettingsFragment : Fragment() {
                                 details["protein_weight"] = initProteinWeight.joinToString (separator = ",")
                                 details["bookmark"] = IntArray(foodCount){_ -> 0}.joinToString(separator = ",")
                                 details["history"] = ""
+                                details["nutrition_edit_history"] = ""
+                                details["photo_upload_history"] = ""
 
                                 val cantEatInputList = details["cant_eat"].toString().split(",")
                                 val preferInputList = details["prefer"].toString().split(",")

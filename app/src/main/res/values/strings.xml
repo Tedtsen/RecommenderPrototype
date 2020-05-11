@@ -45,6 +45,8 @@
     <string name="food_details_edit_description">&#8226; Anyone is free to edit as long as the user can guarantee that his/her information is accurate to a certain degree.
         \n&#8226; The info here is used to calculate and display food in the "Nutrition" category.
         \n&#8226; Please don\'t abuse and thanks for providing the info. </string>
+    <string name="food_details_image_upload_success">Upload Success! Please Refresh In Home!</string>
+    <string name="food_details_image_upload_failed">Upload Failed! Please Try Again!</string>
 
     <!-- Restaurant Details Fragment -->
     <string name="restaurant_details_restaurant_menu">Restaurant Menu</string>

@@ -137,30 +137,19 @@ class FoodRowAdapter() :
             foodDetailsFragment.arguments = bundle
 
             // load fragment of the selected food
-            val mFragment = (holder.itemView.context as FragmentActivity).supportFragmentManager.findFragmentByTag("FOOD_DETAILS_FRAGMENT_TAG")
-            if (mFragment == null) {
-                val transaction = (holder.itemView.context as FragmentActivity).supportFragmentManager.beginTransaction()
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                transaction.add(R.id.containerFullscreen, foodDetailsFragment, "FOOD_DETAILS_FRAGMENT_TAG")
-                transaction.addToBackStack("FOOD_DETAILS_FRAGMENT_TAG")
-                transaction.commit()
-            }
-            else{
-                val transaction = (holder.itemView.context as FragmentActivity).supportFragmentManager.beginTransaction()
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                transaction.add(R.id.containerFullscreen, foodDetailsFragment, "FOOD_DETAILS_FRAGMENT_TAG2")
-                transaction.addToBackStack("FOOD_DETAILS_FRAGMENT_TAG2")
-                transaction.commit()
-            }
+            //REDUNDANT
+            val transaction = (holder.itemView.context as FragmentActivity).supportFragmentManager.beginTransaction()
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+            transaction.add(R.id.containerFullscreen, foodDetailsFragment, "FOOD_DETAILS_FRAGMENT_TAG")
+            transaction.addToBackStack("FOOD_DETAILS_FRAGMENT_TAG")
+            transaction.commit()
         }
 
         //Fill the text of TextViews in each row
         holder.title.text = menu[position].name
         holder.price.text = menu[position].price.toString()
         holder.restaurantName.text = restaurantList.filter { it.restaurant_id == menu[position].restaurant_id }.first().name
-
-        if (menu[position].imgurl != "")
-        {Picasso.get().load(menu[position].imgurl).into(holder.image)}
+        Picasso.get().load(menu[position].imgurl).resize(180,180).centerCrop().into(holder.image)
     }
 
     override fun getFilter(): Filter {

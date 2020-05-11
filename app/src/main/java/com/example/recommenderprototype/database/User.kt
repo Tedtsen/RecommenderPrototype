@@ -17,5 +17,7 @@ data class User (
     var protein_weight: MutableList<Float> = mutableListOf<Float>(),
     var staple_weight: MutableList<Float> = mutableListOf<Float>(),
     var bookmark : MutableList<Int> = mutableListOf<Int>(),
-    var history : MutableList<Int> = mutableListOf<Int>()
+    var history : MutableList<Int> = mutableListOf<Int>(),
+    var nutrition_edit_history : MutableList<String> = mutableListOf<String>(),
+    var photo_upload_history : MutableList<String> = mutableListOf<String>()
 ) : Parcelable

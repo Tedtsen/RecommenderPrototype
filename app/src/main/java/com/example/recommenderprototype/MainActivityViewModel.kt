@@ -59,9 +59,9 @@ class MainActivityViewModel : ViewModel() {
                         val docRef = odb.collection("user").document(currentUser.email!!)
                         docRef.get().addOnSuccessListener { document ->
                             if (document.exists()) {
-                                user.bookmark =
-                                    document["bookmark"].toString().split(",").map { it.toInt() }
-                                        .toMutableList()
+
+                                if (document["bookmark"] != null && document["bookmark"].toString().split(",").toMutableList().isNotEmpty())
+                                    user.bookmark = document["bookmark"].toString().split(",").map { it.toInt() }.toMutableList()
 
                                 //Check if bookmark size is up-to-date in case of new food document added
                                 while (user.bookmark.size < menu.size)
@@ -97,9 +97,12 @@ class MainActivityViewModel : ViewModel() {
                                 user.prefer_not = document["prefer_not"].toString()
                                 user.staple_weight = document["staple_weight"].toString().split(",").map{it.toFloat()}.toMutableList()
                                 user.protein_weight = document["protein_weight"].toString().split(",").map {it.toFloat()}.toMutableList()
-                                user.bookmark = document["bookmark"].toString().split(",").map {it.toInt()}.toMutableList()
-                                if (document["history"].toString() != "")
+                                if (document["history"].toString() != "" && document["history"] != null)
                                     user.history = document["history"].toString().split(",").map {it.toInt()}.toMutableList()
+                                if (document["nutrition_edit_history"].toString() != "" && document["nutrition_edit_history"] != null)
+                                    user.nutrition_edit_history = document["nutrition_edit_history"].toString().split(",").toMutableList()
+                                if (document["photo_upload_history"].toString() != "" && document["photo_upload_history"] != null)
+                                    user.photo_upload_history = document["photo_upload_history"].toString().split(",").toMutableList()
 
                                 /*-- Algorithm --*/
                                 //Knowledge - Based
