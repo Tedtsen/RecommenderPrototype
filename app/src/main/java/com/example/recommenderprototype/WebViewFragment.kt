@@ -259,15 +259,19 @@ class WebViewFragment : Fragment(){
             // your code here
             if (url != "https://imgur.com/upload") {
                 Log.d("upload album url", url)
+                Toast.makeText(view!!.context, view!!.context.getString(R.string.food_details_image_upload_uploading), Toast.LENGTH_LONG).show()
                 val viewModel = ViewModelProvider((view!!.context as FragmentActivity).supportFragmentManager.findFragmentByTag("FOOD_DETAILS_FRAGMENT_TAG")!!).get(WebViewViewModel::class.java)
                 Handler().postDelayed(
                     {
                         // This method will be executed once the timer is over
-                        viewModel.data(inputAlbumUrl = url!!)
                         (view!!.context as FragmentActivity).supportFragmentManager.popBackStack()
+                        Toast.makeText(view!!.context, view!!.context.getString(R.string.food_details_image_upload_still_uploading), Toast.LENGTH_LONG).show()
                     },
-                    2500 // value in milliseconds
+                    3500 // value in milliseconds
                 )
+                Handler().postDelayed({
+                    viewModel.data(inputAlbumUrl = url!!)
+                }, 10000)
             }
             super.doUpdateVisitedHistory(view, url, isReload)
         }

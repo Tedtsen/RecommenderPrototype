@@ -47,6 +47,9 @@
         \n&#8226; Please don\'t abuse and thanks for providing the info. </string>
     <string name="food_details_image_upload_success">Upload Success! Please Refresh In Home!</string>
     <string name="food_details_image_upload_failed">Upload Failed! Please Try Again!</string>
+    <string name="food_details_image_upload_uploading">Uploading…Please Wait!</string>
+    <string name="food_details_image_upload_still_uploading">Still Uploading…</string>
+
 
     <!-- Restaurant Details Fragment -->
     <string name="restaurant_details_restaurant_menu">Restaurant Menu</string>

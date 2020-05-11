@@ -283,6 +283,12 @@ class FoodDetailsFragment : Fragment() , LifecycleObserver{
                     val jsonObject = JSONObject(jsonString)
                     val data  = JSONObject(jsonObject.get("data").toString())
                     val imageArray  = JSONArray(data.get("images").toString())
+                    //Sometimes upload too slow or imgur doesn't have time to generate album cover
+                    if (imageArray.isNull(0) ){
+                        urlConnection.disconnect()
+                        viewModel.imgUrlData(inputImgUrl = null)
+                        return null
+                    }
                     val firstImage  = JSONObject(imageArray.getJSONObject(0).toString())
                     val imageUrl = firstImage.get("link") as String
                     urlConnection.disconnect()
