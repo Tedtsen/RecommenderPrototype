@@ -2,7 +2,6 @@ package com.example.recommenderprototype
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -164,13 +163,14 @@ class FoodRowAdapter() :
                 filteredMenu.addAll(menuFull)
             }
             else{
-                val filteredPattern = constraint.toString().trim()
+                val filterPattern = constraint.toString().trim()
 
                 for (food in menu){
-                    if (food.name.toString().contains(filteredPattern)
-                        || food.staple.toString().contains(filteredPattern)
-                        || food.main_ingredient.toString().contains(filteredPattern)
-                        || food.tag.toString().contains(filteredPattern))
+                    if (food.name.toString().contains(filterPattern)
+                        || food.staple.toString().contains(filterPattern)
+                        || food.main_ingredient.toString().contains(filterPattern)
+                        || food.tag.toString().contains(filterPattern)
+                        || restaurantList.filter { it.restaurant_id == food.restaurant_id }.first().name.contains(filterPattern)  )
                     {
                         filteredMenu.add(food)
                     }
