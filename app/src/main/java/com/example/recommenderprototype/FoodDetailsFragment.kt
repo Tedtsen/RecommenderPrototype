@@ -231,6 +231,7 @@ class FoodDetailsFragment : Fragment() , LifecycleObserver{
                             user.photo_upload_history.add(selectedFood.menu_id+"/"+selectedFood.imgurl)
                             odb.collection("food_test").document(selectedFood.menu_id).update("imgurl", selectedFood.imgurl)
                             odb.collection("user").document(userEmail).update("photo_upload_history", user.photo_upload_history.joinToString(separator = ","))
+                            Picasso.get().load(selectedFood.imgurl).resize(180,180).centerCrop().into(detailsFoodImage)
                             Toast.makeText(this.context, getString(R.string.food_details_image_upload_success), Toast.LENGTH_SHORT).show()
                         }
                         else{

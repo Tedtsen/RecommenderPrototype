@@ -46,7 +46,7 @@
     <string name="food_details_edit_description">&#8226; 任何人都能編輯此資料，但前提是使用者能保證資料能達到某程度的準確性。
         \n&#8226; 資料將用於 “營養專區” 之計算與顯示。
         \n&#8226; 感謝你所貢獻的資料，但也請謝絕濫用。</string>
-    <string name="food_details_image_upload_success">上傳成功！請於主頁刷新！</string>
+    <string name="food_details_image_upload_success">上傳成功！</string>
     <string name="food_details_image_upload_failed">上傳失敗！請稍後再試！</string>
     <string name="food_details_image_upload_uploading">上傳中。。。請稍等！</string>
     <string name="food_details_image_upload_still_uploading">還在上傳中。。。</string>
