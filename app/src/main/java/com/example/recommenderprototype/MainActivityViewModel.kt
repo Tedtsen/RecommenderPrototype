@@ -87,6 +87,9 @@ class MainActivityViewModel : ViewModel() {
                         //val user = User()
                         docRef.get().addOnSuccessListener { document ->
                             if (document.exists()){
+                                user.email = currentUser.email.toString()
+                                user.google_account_profile_photo_url = currentUser.photoUrl.toString()
+                                user.google_account_name = currentUser.displayName.toString()
                                 user.gender = document["gender"].toString()
                                 user.age = document["age"].toString().toInt()
                                 user.height = document["height"].toString().toInt()
@@ -260,6 +263,9 @@ class MainActivityViewModel : ViewModel() {
 
                     //Recommended
                     listOfLists.add(menuRecommended)
+
+                    //Nutrition
+                    listOfLists.add(menu.filter { it-> it.calorie > 0 || it.starch > 0 || it.protein > 0 || it.fat > 0 } as ArrayList<Food>)
 
                     //Rice
                     listOfLists.add(menu.filter { it-> it.staple == "飯" } as ArrayList<Food>)

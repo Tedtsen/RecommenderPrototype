@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -104,19 +102,21 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="12dp"
+            android:drawableStart="@drawable/ic_edit_soft_red_24dp"
             android:text="@string/profile_settings_cant_eat"
             android:textSize="20sp"
-            android:drawableStart="@drawable/ic_edit_soft_red_24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/activityAutoCompleteTextView" />
 
         <MultiAutoCompleteTextView
             android:id="@+id/cantEatMultiAutoCompleteTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:minWidth="250dp"
+            android:layout_marginEnd="24dp"
             android:hint="@string/profile_settings_cant_eat_hint"
+            android:minWidth="250dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cantEatTextView" />
 
@@ -136,8 +136,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:minWidth="110dp"
             android:hint="@string/profile_settings_activity_hint"
+            android:minWidth="110dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/activityTextView" />
 
@@ -145,14 +145,14 @@
             android:id="@+id/submitProfileSettingsButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="#E8F5E9"
             android:paddingStart="156dp"
             android:paddingEnd="156dp"
-            android:background="#E8F5E9"
             android:text="@string/profile_settings_submit"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/preferTextView"
@@ -160,19 +160,21 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
+            android:drawableStart="@drawable/ic_edit_soft_blue_24dp"
             android:text="@string/profile_settings_prefer"
             android:textSize="20sp"
-            android:drawableStart="@drawable/ic_edit_soft_blue_24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cantEatMultiAutoCompleteTextView" />
 
         <MultiAutoCompleteTextView
             android:id="@+id/preferMultiAutoCompleteTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:minWidth="250dp"
+            android:layout_marginEnd="24dp"
             android:hint="@string/profile_settings_prefer_hint"
+            android:minWidth="250dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/preferTextView" />
 
@@ -182,25 +184,27 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
-            android:text="@string/profile_settings_prefer_not"
             android:drawableStart="@drawable/ic_mode_edit_soft_orange_24dp"
+            android:text="@string/profile_settings_prefer_not"
             android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@id/preferNotMultiAutoCompleteTextView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/preferMultiAutoCompleteTextView"
-            app:layout_constraintBottom_toTopOf="@id/preferNotMultiAutoCompleteTextView"
-            app:layout_constraintVertical_chainStyle="packed"
-            app:layout_constraintVertical_bias="0.0"/>
+            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintVertical_chainStyle="packed" />
 
         <MultiAutoCompleteTextView
             android:id="@+id/preferNotMultiAutoCompleteTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:minWidth="250dp"
+            android:layout_marginEnd="24dp"
             android:hint="@string/profile_settings_prefer_not_hint"
+            android:minWidth="250dp"
+            app:layout_constraintBottom_toTopOf="@id/submitProfileSettingsButton"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/preferNotTextView"
-            app:layout_constraintBottom_toTopOf="@id/submitProfileSettingsButton"/>
+            app:layout_constraintTop_toBottomOf="@id/preferNotTextView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

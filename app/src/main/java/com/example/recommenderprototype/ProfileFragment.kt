@@ -24,11 +24,16 @@ import com.firebase.ui.auth.AuthUI
 import com.google.android.gms.auth.api.Auth
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.squareup.picasso.Picasso
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.fragment_food_details.*
 import kotlinx.android.synthetic.main.fragment_profile.*
+import kotlinx.android.synthetic.main.fragment_profile.bookmarkButton
 import kotlinx.android.synthetic.main.fragment_profile_settings.*
 import kotlinx.coroutines.internal.artificialFrame
+import java.util.*
+import kotlin.collections.ArrayList
 
 class ProfileFragment : Fragment() {
 
@@ -54,6 +59,10 @@ class ProfileFragment : Fragment() {
         val user = arguments!!.getParcelable<User>("user")!!
         val restaurantList = arguments!!.getParcelable<MainActivity.RestaurantListParcel>("restaurantList")!!.restaurantList
 
+        if (user.google_account_profile_photo_url != "")
+            Picasso.get().load(user.google_account_profile_photo_url).resize(128, 128).centerCrop().into(userPhotoImageView)
+        usernameTextView.text = user.google_account_name
+
         logoutButton.setOnClickListener {
             AuthUI.getInstance().signOut(this.context!!).addOnSuccessListener {
                 Toast.makeText(this.context, getString(R.string.profile_loggedout_message), Toast.LENGTH_SHORT).show()
@@ -64,8 +73,12 @@ class ProfileFragment : Fragment() {
             //Link to Profile Settings fragment (Back pressed able)
             //No pop stack, Profile Settings fragment on top of Profile fragment
             val transaction = fragmentManager!!.beginTransaction()
+            val profileSettingsFragment = ProfileSettingsFragment()
+            val bundle = Bundle()
+            bundle.putParcelable("user", user)
+            profileSettingsFragment.arguments = bundle
             transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
-            transaction.replace(R.id.containerFullscreen, ProfileSettingsFragment(), "PROFILE_SETTINGS_FRAGMENT_TAG")
+            transaction.replace(R.id.containerFullscreen, profileSettingsFragment, "PROFILE_SETTINGS_FRAGMENT_TAG")
             transaction.addToBackStack("PROFILE_SETTINGS_FRAGMENT_TAG")
             transaction.commit()
         }
@@ -129,8 +142,16 @@ class ProfileFragment : Fragment() {
             builder.setMessage(getString(R.string.profile_feedback_message))
             builder.setView(input)
             builder.setPositiveButton(getString(R.string.profile_settings_submit)) { dialog, which ->
+                val tz = TimeZone.getTimeZone("GMT+08:00");
+                val c = Calendar.getInstance(tz);
+                val dateAndTime : String = c.get(Calendar.YEAR).toString()+"_"+(c.get(Calendar.MONTH)+1).toString()+"_"+c.get(Calendar.DATE).toString()+"_"+c.get(Calendar.HOUR_OF_DAY).toString()+":"+c.get(Calendar.MINUTE).toString()
+                val odb = FirebaseFirestore.getInstance()
+                val data = hashMapOf(
+                    "user" to user.email,
+                    "feedback" to input.text.toString()
+                )
+                odb.collection("user_feedback").document(dateAndTime).set(data)
                 Toast.makeText(this.context, getString(R.string.profile_feedback_submitted), Toast.LENGTH_LONG).show()
-
             }
             builder.setNegativeButton(getString(R.string.profile_feedback_cancel)) { dialog, which ->
                 dialog.dismiss()

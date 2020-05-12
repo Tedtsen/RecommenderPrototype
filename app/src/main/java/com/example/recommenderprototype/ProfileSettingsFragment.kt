@@ -13,9 +13,11 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
+import com.example.recommenderprototype.database.User
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.fragment_profile_settings.*
 import kotlin.collections.HashMap
 import kotlin.collections.List
@@ -36,17 +38,34 @@ class ProfileSettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //Need to record previous Prefer and Prefer Not as they are not saved to hint (3 bugs known not patched, if updating prefernot, and leave prefer the same,
-        // there will be duplicate items that will occur in both prefernot and prefer)(WEIGHT BUG, if resetting of profile doesnt touch prefer/notprefer, weight resetted)
+        //Need to record previous Prefer and Prefer Not as they are not saved to hint (1 bugs known not patched)
         //ZH ENG TRANSLATION ARGHHHHHHHH!!!!
+        var previousCantEatString : String = ""
         var previousPreferString : String = ""
         var previousPreferNotString : String = ""
         var previousStapleWeight : String = ""
         var previousProteinWeight : String = ""
         val initProteinWeight = mutableListOf<Float>(0.5F,0.5F,0.5F,0.5F,0.5F,0.5F,0.5F,0.5F,0.5F,0.5F)
+        val user = arguments!!.getParcelable<User>("user")!!
 
+        //Use details got in viewmodel instead of accessing database again
+        genderAutoCompleteTextView.hint = user.gender
+        AgeEditText.hint = user.age.toString()
+        heightEditText.hint = user.height.toString()
+        weightEditText.hint = user.weight.toString()
+        cantEatMultiAutoCompleteTextView.hint = user.cant_eat.joinToString(",")
+        activityAutoCompleteTextView.hint = user.activity.toString()
+        preferMultiAutoCompleteTextView.hint = user.prefer
+        preferNotMultiAutoCompleteTextView.hint = user.prefer_not
+        previousCantEatString = user.cant_eat.joinToString(",")
+        previousPreferString = user.prefer.toString()
+        previousPreferNotString = user.prefer_not.toString()
+        previousStapleWeight = user.staple_weight.joinToString(",")
+        previousProteinWeight = user.protein_weight.joinToString(",")
+
+        //Obsolete, check above
         //Show the details user already submitted before, when they created the profile for the first time
-        val odb = FirebaseFirestore.getInstance()
+        /*val odb = FirebaseFirestore.getInstance()
         val docRef = odb.collection("user").document(FirebaseAuth.getInstance().currentUser!!.email!!)
         docRef.get().addOnSuccessListener { document ->
             if (document.exists()){
@@ -63,108 +82,129 @@ class ProfileSettingsFragment : Fragment() {
                 previousStapleWeight = document["staple_weight"].toString()
                 previousProteinWeight = document["protein_weight"].toString()
             }
-        }
+        }*/
 
         //Setting the autocomplete list and spinners
-        val genderList = listOf("Male", "Female")
+        val genderList = listOf(getString(R.string.profile_settings_gender_male), getString(R.string.profile_settings_gender_female))
         genderAutoCompleteTextView.setAdapter(createAdapter(genderList, dropDownDesign = android.R.layout.simple_list_item_1))
         genderAutoCompleteTextView.showSelections()
 
         //Cant Eat
+        //Hidden is for the Chinese version, as we will only record in chinese
+        var cantEatHiddenInputString : String = ""
+        var cantEatInputString : String = ""
         val cantEatListZH = listOf("雞肉", "豬肉", "牛肉", "羊肉", "魚肉", "海鮮", "雞蛋", "蔬果", "豆腐")
-        val cantEatList = listOf("Chicken", "Pork", "Beef", "Mutton", "Fish", "Seafood", "Egg", "Vege", "Tofu")
+        val cantEatList = view.resources.getStringArray(R.array.profile_settings_preference_items).toList()
         val cantEatBuilder = AlertDialog.Builder(this.context)
-        cantEatBuilder.setTitle("Can't Eat")
-        cantEatBuilder.setMessage("Select the options below that you can't consume")
+        cantEatBuilder.setTitle(getString(R.string.profile_settings_cant_eat))
+        cantEatBuilder.setMessage(getString(R.string.profile_settings_cant_eat_hint))
         val cantEatListView =  ListView(this.context)
         cantEatListView.choiceMode = ListView.CHOICE_MODE_MULTIPLE
         cantEatListView.adapter = createAdapter(cantEatList, dropDownDesign = android.R.layout.simple_list_item_multiple_choice)
         cantEatBuilder.setView(cantEatListView)
-        cantEatBuilder.setPositiveButton("Done"){ dialog, which ->
-            var cantEatInputString : String = ""
+        cantEatBuilder.setPositiveButton(getString(R.string.profile_settings_done)){ dialog, which ->
+            cantEatHiddenInputString = ""
+            cantEatInputString = ""
             val checked: SparseBooleanArray = cantEatListView.checkedItemPositions
             for (i in 0 until cantEatListView.adapter.count) {
                 if (checked[i]) {
-                    if (cantEatInputString.length == 0)
-                        cantEatInputString += cantEatListZH[i]
-                else cantEatInputString += ("," + cantEatListZH[i])
+                    if (cantEatHiddenInputString.length == 0) {
+
+                        cantEatHiddenInputString += cantEatListZH[i]
+                        //cantEatList can be in English or Chinese according to user's locale
+                        //cantEatInputString is only for the sake of displaying
+                        cantEatInputString += cantEatList[i]
+                    }
+                else {
+                        cantEatHiddenInputString += ("," + cantEatListZH[i])
+                        cantEatInputString += ("," + cantEatList[i])
+                    }
                 }
             }
+            //cantEatInputString is only for the sake of displaying
             cantEatMultiAutoCompleteTextView.setText(cantEatInputString)
         }
-        cantEatBuilder.setNegativeButton("Clear selections"){dialog, which ->
-            cantEatMultiAutoCompleteTextView.setText("Nothing")
+        cantEatBuilder.setNegativeButton(getString(R.string.profile_settings_nothing_clear)){dialog, which ->
+            cantEatMultiAutoCompleteTextView.setText(getString(R.string.profile_settings_nothing))
+            cantEatInputString = getString(R.string.profile_settings_nothing)
+            cantEatHiddenInputString = "沒有"
         }
         cantEatMultiAutoCompleteTextView.isEnabled = false
         val cantEatDialog = cantEatBuilder.create()
         cantEatTextView.setOnClickListener{cantEatDialog.show()}
-        cantEatListView.setOnItemClickListener { parent, view, position, id ->
-        }
 
         //Activity selections
-        val activityList = listOf("Rare", "Few", "Moderate", "Frequent", "Extreme")
+        val activityList = view.resources.getStringArray(R.array.profile_setting_activity_items).toList()
         activityAutoCompleteTextView.setAdapter(createAdapter(activityList, dropDownDesign = android.R.layout.simple_list_item_1))
         activityAutoCompleteTextView.showSelections()
 
         //Prefer List
+        //This is for the sake of display only
         var preferInputString: String = ""
-        val preferList = listOf("Chicken", "Pork", "Beef", "Mutton", "Fish", "Seafood", "Egg", "Vege", "Tofu")
+        //Hidden one is to record
+        var preferHiddenInputString: String = ""
+        val preferList = view.resources.getStringArray(R.array.profile_settings_preference_items).toList()
         val preferListZH = listOf("雞肉", "豬肉", "牛肉", "羊肉", "魚肉", "海鮮", "雞蛋", "蔬果", "豆腐")
-        //Prefer Not List is declared here, to exclude selected preferred items
-        var preferNotList = mutableListOf<String>()
-        var preferNotListZH = mutableListOf<String>()
+        //Prefer Not List is declared here
+        var preferNotList = view.resources.getStringArray(R.array.profile_settings_preference_items).toList()
+        var preferNotListZH = listOf("雞肉", "豬肉", "牛肉", "羊肉", "魚肉", "海鮮", "雞蛋", "蔬果", "豆腐")
         var preferSetFlag : Boolean = false
         val preferBuilder = AlertDialog.Builder(this.context)
-        preferBuilder.setTitle("Prefer")
-        preferBuilder.setMessage("Select the options below that you prefer")
+        preferBuilder.setTitle(getString(R.string.profile_settings_prefer))
+        preferBuilder.setMessage(getString(R.string.profile_settings_prefer_hint))
         val preferListView =  ListView(this.context)
         preferListView.choiceMode = ListView.CHOICE_MODE_MULTIPLE
         preferListView.adapter = createAdapter(preferList, dropDownDesign = android.R.layout.simple_list_item_multiple_choice)
         preferBuilder.setView(preferListView)
-        preferBuilder.setPositiveButton("Done"){dialog, which ->
+        preferBuilder.setPositiveButton(getString(R.string.profile_settings_done)){dialog, which ->
             preferInputString = ""
-            preferNotList.clear()
-            preferNotListZH.clear()
+            preferHiddenInputString = ""
             val checked: SparseBooleanArray = preferListView.checkedItemPositions
             for (i in 0 until cantEatListView.adapter.count) {
                 if (checked[i]) {
-                    initProteinWeight[i] = 1F
-                    if (preferInputString.length == 0)
-                        preferInputString += preferListZH[i]
-                    else preferInputString += ("," + preferListZH[i])
-
-                }
-                else{
-                    preferNotList.add(preferList[i])
-                    preferNotListZH.add(preferListZH[i])
+                    if (preferHiddenInputString.length == 0){
+                        preferHiddenInputString += preferListZH[i]
+                        preferInputString += preferList[i]
+                    }
+                    else {
+                        preferInputString += ("," + preferList[i])
+                        preferHiddenInputString += ("," + preferListZH[i])
+                    }
                 }
             }
             preferMultiAutoCompleteTextView.setText(preferInputString)
-            preferSetFlag = true
+            if (preferInputString != "")
+                preferSetFlag = true
+            else preferSetFlag = false
         }
         preferMultiAutoCompleteTextView.isEnabled = false
         val preferDialog = preferBuilder.create()
         preferTextView.setOnClickListener{preferDialog.show()}
 
         //Prefer Not List 
+        var preferNotHiddenInputString: String = ""
         var preferNotInputString: String = ""
         val preferNotBuilder = AlertDialog.Builder(this.context)
-        preferNotBuilder.setTitle("Prefer Not")
-        preferNotBuilder.setMessage("Select the options below that you not prefer")
+        preferNotBuilder.setTitle(getString(R.string.profile_settings_prefer_not))
+        preferNotBuilder.setMessage(getString(R.string.profile_settings_prefer_not_hint))
         val preferNotListView =  ListView(this.context)
         preferNotListView.choiceMode = ListView.CHOICE_MODE_MULTIPLE
         preferNotListView.adapter = createAdapter(preferNotList, dropDownDesign = android.R.layout.simple_list_item_multiple_choice)
         preferNotBuilder.setView(preferNotListView)
-        preferNotBuilder.setPositiveButton("Done"){dialog, which ->
+        preferNotBuilder.setPositiveButton(getString(R.string.profile_settings_done)){dialog, which ->
+            preferNotHiddenInputString = ""
             preferNotInputString = ""
             val checked: SparseBooleanArray = preferNotListView.checkedItemPositions
             for (i in 0 until preferNotListView.adapter.count) {
                 if (checked[i]) {
-                    //get index from prefer list as it is original, while prefer not list is modified
-                    initProteinWeight[preferList.indexOf(preferNotList[i])] = 0F
-                    if (preferNotInputString.length == 0)
-                        preferNotInputString += preferNotListZH[i]
-                    else preferNotInputString += ("," + preferNotListZH[i])
+                    if (preferNotHiddenInputString.length == 0){
+                        preferNotHiddenInputString += preferNotListZH[i]
+                        preferNotInputString += preferNotList[i]
+                    }
+                    else {
+                        preferNotHiddenInputString += ("," + preferNotListZH[i])
+                        preferNotInputString += ("," + preferNotList[i])
+                    }
                 }
             }
             preferNotMultiAutoCompleteTextView.setText(preferNotInputString)
@@ -185,34 +225,60 @@ class ProfileSettingsFragment : Fragment() {
             val docRef = odb.collection("user").document(FirebaseAuth.getInstance().currentUser!!.email!!)
             docRef.get().addOnSuccessListener { document ->
                 if (document.exists()){
-                    val gender = genderAutoCompleteTextView.getTextThenHint()
-                    val age = AgeEditText.getTextThenHint()
+                    val gender = genderAutoCompleteTextView.getTextThenHint().translateToChinese()
+                    val age = AgeEditText.getTextThenHint().toInt()
                     val height = heightEditText.getTextThenHint().toInt()
                     val weight = weightEditText.getTextThenHint().toInt()
-                    val cantEat = cantEatMultiAutoCompleteTextView.getTextThenHint()
-                    val activity = activityAutoCompleteTextView.getTextThenHint()
+                    val activity = activityAutoCompleteTextView.getTextThenHint().translateToChinese()
 
                     val details  = HashMap<String, kotlin.Any>()
                     details["gender"] = gender
                     details["age"] = age
                     details["height"] = height
                     details["weight"] = weight
-                    details["cant_eat"] = cantEat
-                    details["prefer"] = if (preferInputString != "") preferInputString else previousPreferString
-                    details["prefer_not"] = if (preferNotInputString != "") preferNotInputString else previousPreferNotString
+                    details["cant_eat"] = if (cantEatHiddenInputString != "") cantEatHiddenInputString else previousCantEatString
+                    details["prefer"] = if (preferHiddenInputString != "") preferHiddenInputString else previousPreferString
+                    details["prefer_not"] = if (preferNotHiddenInputString != "") preferNotHiddenInputString else previousPreferNotString
                     details["activity"] = activity
                     details["staple_weight"] = previousStapleWeight
-                    //If new protein weight is different and not default, then upload new protein weight
-                    details["protein_weight"] = if (initProteinWeight.joinToString(separator = ",") != previousProteinWeight
-                                                    && initProteinWeight.joinToString (separator = ",") != "0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5")
-                                                        initProteinWeight.joinToString (separator = ",")
-                                                else previousProteinWeight
 
+                    //Take data and check for conflict
                     val cantEatInputList = details["cant_eat"].toString().split(",")
                     val preferInputList = details["prefer"].toString().split(",")
                     val preferNotInputList = details["prefer_not"].toString().split(",")
                     if (checkIfConflict(cantEatInputList, preferInputList, preferNotInputList) == false){
-                        odb.collection("user").document(FirebaseAuth.getInstance().currentUser!!.email!!).set(details)
+
+                        //Protein weight is calculated here to ensure no conflict
+                        //First calculate initProteinWeight
+                        preferListZH.forEachIndexed{ index: Int, element: String ->
+                            if (preferHiddenInputString.contains(element)){
+                                initProteinWeight[index] = 1F
+                            }
+                            else if (preferNotHiddenInputString.contains(element)){
+                                initProteinWeight[index] = 0F
+                            }
+                        }
+                        //If new protein weight is different and not default, then upload new protein weight
+                        details["protein_weight"] = if (initProteinWeight.joinToString(separator = ",") != previousProteinWeight
+                            && initProteinWeight.joinToString (separator = ",") != "0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5")
+                            initProteinWeight.joinToString (separator = ",")
+                        else previousProteinWeight
+
+                        //Set above details if no conflict
+                        odb.collection("user").document(FirebaseAuth.getInstance().currentUser!!.email!!).set(details, SetOptions.merge())
+
+                        //RMB Set details to local reference too
+                        user.gender = gender
+                        user.age = age
+                        user.height = height
+                        user.weight = weight
+                        user.cant_eat = details["cant_eat"].toString().split(",").toMutableList()
+                        user.prefer = details["prefer"].toString()
+                        user.prefer_not = details["prefer_not"].toString()
+                        user.activity = activity
+                        user.staple_weight = previousStapleWeight.split(",").map { it.toFloat() }.toMutableList()
+                        user.protein_weight = details["protein_weight"].toString().split(",").map { it.toFloat() }.toMutableList()
+
                         Toast.makeText(this.context, getString(R.string.profile_settings_submitted_message), Toast.LENGTH_SHORT).show()
                         fragmentManager!!.popBackStack()
                     }
@@ -230,13 +296,13 @@ class ProfileSettingsFragment : Fragment() {
                         notEmptyCheckBoxes[2] = true
                     if (weightEditText.checkIfEmpty() == false)
                         notEmptyCheckBoxes[3] = true
-                    if (cantEatMultiAutoCompleteTextView.checkIfEmpty() == false)
+                    if (cantEatHiddenInputString != "" || cantEatMultiAutoCompleteTextView.checkIfEmpty() == false)
                         notEmptyCheckBoxes[4] = true
                     if (activityAutoCompleteTextView.checkIfEmpty() == false)
                         notEmptyCheckBoxes[5] = true
-                    if (preferInputString != "" || preferMultiAutoCompleteTextView.checkIfEmpty() == false)
+                    if (preferHiddenInputString != "" || preferMultiAutoCompleteTextView.checkIfEmpty() == false)
                         notEmptyCheckBoxes[6] = true
-                    if (preferNotInputString != "" || preferNotMultiAutoCompleteTextView.checkIfEmpty() == false)
+                    if (preferNotHiddenInputString != "" || preferNotMultiAutoCompleteTextView.checkIfEmpty() == false)
                         notEmptyCheckBoxes[7] = true
                     var passed = true
                    for (status in notEmptyCheckBoxes)
@@ -246,42 +312,65 @@ class ProfileSettingsFragment : Fragment() {
                    }
                     //If no empty fields
                     if (passed){
-                                val gender = genderAutoCompleteTextView.getTextThenHint()
-                                val age = AgeEditText.getTextThenHint()
+                                val gender = genderAutoCompleteTextView.getTextThenHint().translateToChinese()
+                                val age = AgeEditText.getTextThenHint().toInt()
                                 val height = heightEditText.getTextThenHint().toInt()
                                 val weight = weightEditText.getTextThenHint().toInt()
-                                val cantEat = cantEatMultiAutoCompleteTextView.getTextThenHint()
-                                val activity = activityAutoCompleteTextView.getTextThenHint()
+                                val activity = activityAutoCompleteTextView.getTextThenHint().translateToChinese()
                                 val foodCount = arguments!!.getParcelable<MainActivity.CountParcel>("foodCount")!!.foodCount
 
+                                //Package all details into a hashmap to upload to firestore
                                 val details  = HashMap<String, kotlin.Any>()
                                 details["gender"] = gender
                                 details["age"] = age
                                 details["height"] = height
                                 details["weight"] = weight
-                                details["cant_eat"] = cantEat
-                                details["prefer"] = preferInputString
-                                details["prefer_not"] =  preferNotInputString
+                                details["cant_eat"] = cantEatHiddenInputString
+                                details["prefer"] = preferHiddenInputString
+                                details["prefer_not"] =  preferNotHiddenInputString
                                 details["activity"] = activity
                                 details["staple_weight"] = "1,1,1,1,1,1,1"
-                                details["protein_weight"] = initProteinWeight.joinToString (separator = ",")
                                 details["bookmark"] = IntArray(foodCount){_ -> 0}.joinToString(separator = ",")
                                 details["history"] = ""
                                 details["nutrition_edit_history"] = ""
                                 details["photo_upload_history"] = ""
 
+                                //Take data and check for conflict
                                 val cantEatInputList = details["cant_eat"].toString().split(",")
                                 val preferInputList = details["prefer"].toString().split(",")
                                 val preferNotInputList = details["prefer_not"].toString().split(",")
-
                                 if (checkIfConflict(cantEatInputList, preferInputList, preferNotInputList) == false){
 
-                                    //Set above details
+                                    //Protein weight is calculated here to ensure no conflict
+                                    //Calculate initial protein weight
+                                    preferListZH.forEachIndexed{ index: Int, element: String ->
+                                        if (preferHiddenInputString.contains(element)){
+                                            initProteinWeight[index] = 1F
+                                        }
+                                        else if (preferNotHiddenInputString.contains(element)){
+                                            initProteinWeight[index] = 0F
+                                        }
+                                    }
+                                    details["protein_weight"] = initProteinWeight.joinToString (separator = ",")
+
+                                    //Set above details if no conflict
                                     odb.collection("user").document(FirebaseAuth.getInstance().currentUser!!.email!!).set(details)
 
                                     //Initialise user entry in user-item matrix (get foodCount from parcel from MainActivity)
                                     val userEntry = hashMapOf("CF_score" to IntArray(foodCount){_-> 0}.joinToString(separator = ","))
                                     odb.collection("user_item_matrix").document(FirebaseAuth.getInstance().currentUser!!.email!!).set(userEntry)
+
+                                    //RMB Set the details to local reference too
+                                    user.gender = gender
+                                    user.age = age
+                                    user.height = height
+                                    user.weight = weight
+                                    user.cant_eat = cantEatHiddenInputString.split(",").toMutableList()
+                                    user.prefer = details["prefer"].toString()
+                                    user.prefer_not = details["prefer_not"].toString()
+                                    user.activity = activity
+                                    user.staple_weight = previousStapleWeight.split(",").map { it.toFloat() }.toMutableList()
+                                    user.protein_weight = details["protein_weight"].toString().split(",").map { it.toFloat() }.toMutableList()
 
                                     Toast.makeText(this.context, getString(R.string.profile_settings_submitted_message), Toast.LENGTH_SHORT).show()
                                     fragmentManager!!.popBackStack()
@@ -292,6 +381,20 @@ class ProfileSettingsFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun String.translateToChinese() : String{
+        var returnString = this
+        when (this){
+            "Male" -> returnString = "男"
+            "Female" -> returnString = "女"
+            "Rare" -> returnString = "極少"
+            "Few" -> returnString = "少"
+            "Moderate" -> returnString = "適中"
+            "Frequent" -> returnString = "多"
+            "Extreme" -> returnString = "極多"
+        }
+        return returnString
     }
 
     private fun EditText.getTextThenHint() : String{

@@ -76,6 +76,9 @@ class HorizontalRecyclerViewAdapter(val categories: List<String>, foodGridRecycl
             else if (categories[position] == categoriesStrings[8]) {
                 changeRecyclerViewList(holder, 8, position)
             }
+            else if (categories[position] == categoriesStrings[9]) {
+                changeRecyclerViewList(holder, 9, position)
+            }
         }
         if (position == selectedPosition)
             holder.itemView.setBackgroundResource(R.drawable.rounded_corners_selected)

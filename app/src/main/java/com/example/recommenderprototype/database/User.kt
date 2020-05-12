@@ -19,5 +19,8 @@ data class User (
     var bookmark : MutableList<Int> = mutableListOf<Int>(),
     var history : MutableList<Int> = mutableListOf<Int>(),
     var nutrition_edit_history : MutableList<String> = mutableListOf<String>(),
-    var photo_upload_history : MutableList<String> = mutableListOf<String>()
+    var photo_upload_history : MutableList<String> = mutableListOf<String>(),
+    var google_account_profile_photo_url : String = "",
+    var google_account_name : String = "",
+    var email : String = ""
 ) : Parcelable

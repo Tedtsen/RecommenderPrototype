@@ -76,4 +76,7 @@ dependencies {
 
     //For Klaxon JSON parser
     implementation 'com.beust:klaxon:5.0.1'
+
+    //Circle imageView
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 }

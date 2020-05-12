@@ -13,6 +13,7 @@
     <string-array name="categories">
         <item>熱門</item>
         <item>推薦</item>
+        <item>營養</item>
         <item>飯類</item>
         <item>麵類</item>
         <item>餃類</item>
@@ -44,7 +45,7 @@
     <string name="food_details_login_to_edit">登錄後才能編輯！</string>
     <string name="food_details_edit_title">編輯食物營養資訊</string>
     <string name="food_details_edit_description">&#8226; 任何人都能編輯此資料，但前提是使用者能保證資料能達到某程度的準確性。
-        \n&#8226; 資料將用於 “營養專區” 之計算與顯示。
+        \n&#8226; 資料將用於 “營養” 品項類別之顯示。
         \n&#8226; 感謝你所貢獻的資料，但也請謝絕濫用。</string>
     <string name="food_details_image_upload_success">上傳成功！</string>
     <string name="food_details_image_upload_failed">上傳失敗！請稍後再試！</string>
@@ -70,6 +71,8 @@
 
     <!-- Profile Settings Fragment -->
     <string name="profile_settings_gender">性別</string>
+    <string name="profile_settings_gender_male">男</string>
+    <string name="profile_settings_gender_female">女</string>
     <string name="profile_settings_age">年齡</string>
     <string name="profile_settings_height">身高 (cm)</string>
     <string name="profile_settings_weight">體重 (kg)</string>
@@ -78,6 +81,27 @@
     <string name="profile_settings_prefer">喜歡吃的</string>
     <string name="profile_settings_prefer_not">不喜歡吃的</string>
     <string name="profile_settings_submit">提交</string>
+    <string name="profile_settings_done">好了</string>
+    <string name="profile_settings_nothing_clear">沒有/清除</string>
+    <string name="profile_settings_nothing">沒有</string>
+    <string-array name="profile_setting_activity_items">
+        <item>極少</item>
+        <item>少</item>
+        <item>適中</item>
+        <item>多</item>
+        <item>極多</item>
+    </string-array>
+    <string-array name="profile_settings_preference_items">
+        <item>雞肉</item>
+        <item>豬肉</item>
+        <item>牛肉</item>
+        <item>羊肉</item>
+        <item>魚肉</item>
+        <item>海鮮</item>
+        <item>雞蛋</item>
+        <item>蔬果</item>
+        <item>豆腐</item>
+    </string-array>
     /* Profile Settings Fragment Hints */
     <string name="profile_settings_gender_hint">男/女</string>
     <string name="profile_settings_age_hint">輸入年齡</string>

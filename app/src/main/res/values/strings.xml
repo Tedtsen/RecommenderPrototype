@@ -12,6 +12,7 @@
     <string-array name="categories">
         <item>Popular</item>
         <item>Suggestions</item>
+        <item>Nutrition</item>
         <item>Rice</item>
         <item>Noodle</item>
         <item>Dumpling</item>
@@ -43,7 +44,7 @@
     <string name="food_details_login_to_edit">Please Login To Edit!</string>
     <string name="food_details_edit_title">Edit Nutrition Info</string>
     <string name="food_details_edit_description">&#8226; Anyone is free to edit as long as the user can guarantee that his/her information is accurate to a certain degree.
-        \n&#8226; The info here is used to calculate and display food in the "Nutrition" category.
+        \n&#8226; The info here is used to display　food in the "Nutrition" category.
         \n&#8226; Please don\'t abuse and thanks for providing the info. </string>
     <string name="food_details_image_upload_success">Upload Success!</string>
     <string name="food_details_image_upload_failed">Upload Failed! Please Try Again!</string>
@@ -70,6 +71,8 @@
 
     <!-- Profile Settings Fragment -->
     <string name="profile_settings_gender">Gender</string>
+    <string name="profile_settings_gender_male">Male</string>
+    <string name="profile_settings_gender_female">Female</string>
     <string name="profile_settings_age">Age</string>
     <string name="profile_settings_height">Height (cm)</string>
     <string name="profile_settings_weight">Weight (kg)</string>
@@ -78,6 +81,27 @@
     <string name="profile_settings_prefer">Set Prefer</string>
     <string name="profile_settings_prefer_not">Set Prefer Not</string>
     <string name="profile_settings_submit">Submit</string>
+    <string name="profile_settings_done">Done</string>
+    <string name="profile_settings_nothing_clear">Nothing/Clear</string>
+    <string name="profile_settings_nothing">Nothing</string>
+    <string-array name="profile_setting_activity_items">
+        <item>Rare</item>
+        <item>Few</item>
+        <item>Moderate</item>
+        <item>Frequent</item>
+        <item>Extreme</item>
+    </string-array>
+    <string-array name="profile_settings_preference_items">
+        <item>Chicken</item>
+        <item>Pork</item>
+        <item>Beef</item>
+        <item>Mutton</item>
+        <item>Fish</item>
+        <item>Seafood</item>
+        <item>Egg</item>
+        <item>Vege</item>
+        <item>Tofu</item>
+    </string-array>
     /* Profile Settings Fragment Hints */
     <string name="profile_settings_gender_hint">Male/Female</string>
     <string name="profile_settings_age_hint">Enter age</string>
