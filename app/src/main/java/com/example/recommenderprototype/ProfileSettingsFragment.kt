@@ -48,21 +48,22 @@ class ProfileSettingsFragment : Fragment() {
         val initProteinWeight = mutableListOf<Float>(0.5F,0.5F,0.5F,0.5F,0.5F,0.5F,0.5F,0.5F,0.5F,0.5F)
         val user = arguments!!.getParcelable<User>("user")!!
 
-        //Use details got in viewmodel instead of accessing database again
-        genderAutoCompleteTextView.hint = user.gender
-        AgeEditText.hint = user.age.toString()
-        heightEditText.hint = user.height.toString()
-        weightEditText.hint = user.weight.toString()
-        cantEatMultiAutoCompleteTextView.hint = user.cant_eat.joinToString(",")
-        activityAutoCompleteTextView.hint = user.activity.toString()
-        preferMultiAutoCompleteTextView.hint = user.prefer
-        preferNotMultiAutoCompleteTextView.hint = user.prefer_not
-        previousCantEatString = user.cant_eat.joinToString(",")
-        previousPreferString = user.prefer.toString()
-        previousPreferNotString = user.prefer_not.toString()
-        previousStapleWeight = user.staple_weight.joinToString(",")
-        previousProteinWeight = user.protein_weight.joinToString(",")
-
+        //Use details got in mainActivityViewModel instead of accessing database again
+        if (user.age != -1) {
+            genderAutoCompleteTextView.hint = user.gender
+            AgeEditText.hint = user.age.toString()
+            heightEditText.hint = user.height.toString()
+            weightEditText.hint = user.weight.toString()
+            cantEatMultiAutoCompleteTextView.hint = user.cant_eat.joinToString(",")
+            activityAutoCompleteTextView.hint = user.activity.toString()
+            preferMultiAutoCompleteTextView.hint = user.prefer
+            preferNotMultiAutoCompleteTextView.hint = user.prefer_not
+            previousCantEatString = user.cant_eat.joinToString(",")
+            previousPreferString = user.prefer.toString()
+            previousPreferNotString = user.prefer_not.toString()
+            previousStapleWeight = user.staple_weight.joinToString(",")
+            previousProteinWeight = user.protein_weight.joinToString(",")
+        }
         //Obsolete, check above
         //Show the details user already submitted before, when they created the profile for the first time
         /*val odb = FirebaseFirestore.getInstance()
@@ -369,7 +370,7 @@ class ProfileSettingsFragment : Fragment() {
                                     user.prefer = details["prefer"].toString()
                                     user.prefer_not = details["prefer_not"].toString()
                                     user.activity = activity
-                                    user.staple_weight = previousStapleWeight.split(",").map { it.toFloat() }.toMutableList()
+                                    user.staple_weight = details["staple_weight"].toString().split(",").map { it.toFloat() }.toMutableList()
                                     user.protein_weight = details["protein_weight"].toString().split(",").map { it.toFloat() }.toMutableList()
 
                                     Toast.makeText(this.context, getString(R.string.profile_settings_submitted_message), Toast.LENGTH_SHORT).show()

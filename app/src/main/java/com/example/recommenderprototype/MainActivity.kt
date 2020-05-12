@@ -164,16 +164,50 @@ class MainActivity : AppCompatActivity() {
             {
                 //Signed in successfully, check if profile details are set
                 auth = FirebaseAuth.getInstance()
-                val currentUserEmail = auth.currentUser!!.email!!
-                Toast.makeText(this, getString(R.string.profile_signed_in_as)+ " " + currentUserEmail, Toast.LENGTH_SHORT).show()
+                val currentUser = auth.currentUser!!
+                Toast.makeText(this, getString(R.string.profile_signed_in_as)+ " " + currentUser.email, Toast.LENGTH_SHORT).show()
                 val odb = FirebaseFirestore.getInstance()
-                val docRef = odb.collection("user").document(currentUserEmail)
+                val docRef = odb.collection("user").document(currentUser.email!!)
                 docRef.get()
                     .addOnSuccessListener {document->
                         if (document.exists()) {
                             //if profile details are already SET (goto profile page)
                             val mFragment = supportFragmentManager.findFragmentByTag("PROFILE_FRAGMENT_TAG")
                             if (mFragment == null) {
+
+                                //Needs to reassign all local reference of user info after login successful
+                                user.bookmark = document["bookmark"].toString().split(",").map { it.toInt() }.toMutableList()
+
+                                //Check if bookmark length is up-to-date
+                                while (user.bookmark.size < mListsParcel.listOfLists[0].size)
+                                    user.bookmark.add(0)
+
+                                mListsParcel.listOfLists[0].forEachIndexed { index, food ->
+                                    if (user.bookmark[food.matrix_index] == 1)
+                                        food.bookmark = true
+                                }
+
+                                user.email = currentUser.email.toString()
+                                user.google_account_profile_photo_url = currentUser.photoUrl.toString()
+                                user.google_account_name = currentUser.displayName.toString()
+                                user.gender = document["gender"].toString()
+                                user.age = document["age"].toString().toInt()
+                                user.height = document["height"].toString().toInt()
+                                user.weight = document["weight"].toString().toInt()
+                                user.cant_eat = document["cant_eat"].toString().split(",").toMutableList()
+                                user.activity = document["activity"].toString()
+                                user.prefer = document["prefer"].toString()
+                                user.prefer_not = document["prefer_not"].toString()
+                                user.staple_weight = document["staple_weight"].toString().split(",").map{it.toFloat()}.toMutableList()
+                                user.protein_weight = document["protein_weight"].toString().split(",").map {it.toFloat()}.toMutableList()
+                                if (document["history"].toString() != "" && document["history"] != null)
+                                    user.history = document["history"].toString().split(",").map {it.toInt()}.toMutableList()
+                                if (document["nutrition_edit_history"].toString() != "" && document["nutrition_edit_history"] != null)
+                                    user.nutrition_edit_history = document["nutrition_edit_history"].toString().split(",").toMutableList()
+                                if (document["photo_upload_history"].toString() != "" && document["photo_upload_history"] != null)
+                                    user.photo_upload_history = document["photo_upload_history"].toString().split(",").toMutableList()
+
+
                                 val bundle = Bundle()
                                 bundle.putParcelable("listOfLists", mListsParcel)
                                 bundle.putParcelable("user", user)
@@ -182,17 +216,6 @@ class MainActivity : AppCompatActivity() {
                                 profileFragment.arguments = bundle
                                 supportFragmentManager.popBackStack()
                                 loadFragment(profileFragment, "PROFILE_FRAGMENT_TAG", fullscreen = false)
-
-                                //Needs to reassign all bookmarks after login successful
-                                user.bookmark = document["bookmark"].toString().split(",").map { it.toInt() }.toMutableList()
-
-                                while (user.bookmark.size < mListsParcel.listOfLists[0].size)
-                                    user.bookmark.add(0)
-
-                                mListsParcel.listOfLists[0].forEachIndexed { index, food ->
-                                    if (user.bookmark[food.matrix_index] == 1)
-                                        food.bookmark = true
-                                }
                             }
                         }
                         else {
@@ -200,11 +223,15 @@ class MainActivity : AppCompatActivity() {
                             val mFragment = supportFragmentManager.findFragmentByTag("PROFILE_SETTINGS_FRAGMENT_TAG")
                             if (mFragment==null){
                                 supportFragmentManager.popBackStack()
+
                                 //First-time login and profile NOT set, so we need to add entry in user-item matrix (need foodCount for column width)
+                                val user = User()
                                 val bundle = Bundle()
                                 bundle.putParcelable("foodCount", mCountParcel)
+                                bundle.putParcelable("user", user)
                                 val profileSettingsFragment = ProfileSettingsFragment()
                                 profileSettingsFragment.arguments = bundle
+
                                 // load fragment
                                 /*val container = R.id.containerFullscreen
                                 val transaction = supportFragmentManager.beginTransaction()
