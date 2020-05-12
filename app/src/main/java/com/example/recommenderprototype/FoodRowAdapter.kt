@@ -2,10 +2,14 @@ package com.example.recommenderprototype
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Filter
+import android.widget.Filterable
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
@@ -13,8 +17,7 @@ import com.example.recommenderprototype.database.Food
 import com.example.recommenderprototype.database.Restaurant
 import com.example.recommenderprototype.database.User
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.parcel.Parcelize
 
@@ -24,6 +27,7 @@ class FoodRowAdapter() :
     private var menu = ArrayList<Food>()
     private var user = User()
     private var restaurantList = ArrayList<Restaurant>()
+    private var listenerRegistration : ListenerRegistration? = null
 
     @Parcelize
     data class CountParcel (val size : Int = -1) : Parcelable
@@ -72,9 +76,9 @@ class FoodRowAdapter() :
 
     override fun onBindViewHolder(holder: FoodRowAdapter.GridViewHolder, position: Int) {
 
+        val odb = FirebaseFirestore.getInstance()
         holder.itemView.setOnClickListener{
             //Update user weight on Firestore after click
-            val odb = FirebaseFirestore.getInstance()
             val auth = FirebaseAuth.getInstance()
             val currentUser = auth.currentUser
             if (currentUser != null){
@@ -148,7 +152,45 @@ class FoodRowAdapter() :
         holder.title.text = menu[position].name
         holder.price.text = menu[position].price.toString()
         holder.restaurantName.text = restaurantList.filter { it.restaurant_id == menu[position].restaurant_id }.first().name
-        Picasso.get().load(menu[position].imgurl).resize(180,180).centerCrop().into(holder.image)
+
+        //Firestore document realtime listener
+        //To prevent scrolling too fast, check if docName not null first then get document reference
+        val docName : String? = menu[position].menu_id
+        if (docName != "" && docName != null) {
+            val docRef = odb.collection("food_test").document(docName)
+            val eventListener: EventListener<DocumentSnapshot> =
+                EventListener { snapshot, e ->
+                    if (snapshot != null && snapshot.exists()) {
+                        //Do what you need to do
+                        Log.d("snapshot listener", "Current data: ${snapshot.data}")
+                        menu[position].imgurl = snapshot.toObject(Food::class.java)!!.imgurl
+                        menu[position].calorie = snapshot.toObject(Food::class.java)!!.calorie
+                        menu[position].starch = snapshot.toObject(Food::class.java)!!.starch
+                        menu[position].protein = snapshot.toObject(Food::class.java)!!.protein
+                        menu[position].fat = snapshot.toObject(Food::class.java)!!.fat
+                        Picasso.get().load(menu[position].imgurl).resize(180,180).centerCrop().into(holder.image)
+                    }
+                    else {
+                        Log.d("snapshot listener", "Current data: null")
+                    }
+                }
+            //Attach listener to document reference and we register it, so listener can be removed when view is detached
+            if (listenerRegistration == null){
+                listenerRegistration = docRef.addSnapshotListener(eventListener)
+            }
+        }
+    }
+
+    override fun onViewAttachedToWindow(holder: GridViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        Picasso.get().load(menu[holder.adapterPosition].imgurl).resize(180,180).centerCrop().into(holder.image)
+    }
+
+    override fun onViewDetachedFromWindow(holder: GridViewHolder) {
+        super.onViewDetachedFromWindow(holder)
+        //remove listener
+        if (listenerRegistration != null)
+            listenerRegistration!!.remove()
     }
 
     override fun getFilter(): Filter {
