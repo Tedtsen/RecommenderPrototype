@@ -60,7 +60,7 @@ class ProfileFragment : Fragment() {
         val restaurantList = arguments!!.getParcelable<MainActivity.RestaurantListParcel>("restaurantList")!!.restaurantList
 
         if (user.google_account_profile_photo_url != "")
-            Picasso.get().load(user.google_account_profile_photo_url).resize(128, 128).centerCrop().into(userPhotoImageView)
+            Picasso.get().load(user.google_account_profile_photo_url).resize(512, 512).centerCrop().into(userPhotoImageView)
         usernameTextView.text = user.google_account_name
 
         logoutButton.setOnClickListener {

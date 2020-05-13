@@ -27,7 +27,7 @@
     <string name="suggestions_close_app_to_refresh">請退出再開啓應用程式以更新資料！</string>
 
     <!-- Food Details Fragment -->
-    <string name="food_details_nutrition"><u>營養咨詢</u></string>
+    <string name="food_details_nutrition"><u>營養資訊</u></string>
     <string name="food_details_main_ingredients"><u>主要食材</u></string>
     <string name="food_details_food_type"><u>食物種類</u></string>
     <string name="food_details_calorie">卡路里</string>
@@ -50,7 +50,7 @@
     <string name="food_details_image_upload_success">上傳成功！</string>
     <string name="food_details_image_upload_failed">上傳失敗！請稍後再試！</string>
     <string name="food_details_image_upload_uploading">上傳中。。。請稍等！</string>
-    <string name="food_details_image_upload_still_uploading">還在上傳中。。。</string>
+    <string name="food_details_image_upload_still_uploading">正在上傳中。。。</string>
 
     <!-- Restaurant Details Fragment -->
     <string name="restaurant_details_restaurant_menu">餐廳菜單</string>

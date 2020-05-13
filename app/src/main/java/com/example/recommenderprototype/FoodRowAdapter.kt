@@ -27,7 +27,7 @@ class FoodRowAdapter() :
     private var menu = ArrayList<Food>()
     private var user = User()
     private var restaurantList = ArrayList<Restaurant>()
-    private var listenerRegistrations  = hashMapOf<String, ArrayList<ListenerRegistration?>>()
+    private var listenerRegistrations  = hashMapOf<String, HashMap<Int, ListenerRegistration?>>()
 
     @Parcelize
     data class CountParcel (val size : Int = -1) : Parcelable
@@ -55,8 +55,9 @@ class FoodRowAdapter() :
         else this.menu = listOfLists!![categoryIndex]
         menuFull = ArrayList<Food>(originalMenu)
 
-        listenerRegistrations["main"] = arrayListOf<ListenerRegistration?>()
-        listenerRegistrations["search"] = arrayListOf<ListenerRegistration?>()
+        listenerRegistrations["main"] = hashMapOf()
+        listenerRegistrations["search"] = hashMapOf()
+        listenerRegistrations["restaurant"] = hashMapOf()
     }
 
     class GridViewHolder(view: View) : RecyclerView.ViewHolder(view){
@@ -74,7 +75,7 @@ class FoodRowAdapter() :
 
     override fun getItemCount() = menu.size
 
-    override fun onBindViewHolder(holder: FoodRowAdapter.GridViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: GridViewHolder, position: Int) {
 
         //Log.d("viewbind", "binded" )
         val odb = FirebaseFirestore.getInstance()
@@ -163,9 +164,9 @@ class FoodRowAdapter() :
                 EventListener { snapshot, e ->
                     if (snapshot != null && snapshot.exists()) {
                         //Do what you need to do
-                        //Log.d("snapshot listener", "Current data: ${snapshot.data}")
+                        Log.d("snapshot listener", "Current data: ${snapshot.data}")
                         //For the case of search fragment, out of bound will occur
-                        //Log.d("menu size and postion", menu.size.toString() + " " + position.toString())
+                        Log.d("menu size and postion", menu.size.toString() + " " + position.toString())
                         if (position < menu.size) {
                             menu[position].imgurl = snapshot.toObject(Food::class.java)!!.imgurl
                             menu[position].calorie = snapshot.toObject(Food::class.java)!!.calorie
@@ -181,13 +182,18 @@ class FoodRowAdapter() :
                 }
 
             //Attach listener to document reference and we register it, so listener can be removed when view is detached
-            val mfragment = (holder.itemView.context as FragmentActivity).supportFragmentManager.findFragmentByTag("SEARCH_FRAGMENT_TAG")
-            //If this is main recycler, add to main
-            if (mfragment == null){
-                listenerRegistrations["main"]!!.add(position, docRef.addSnapshotListener(eventListener))
+            val searchFragment = (holder.itemView.context as FragmentActivity).supportFragmentManager.findFragmentByTag("SEARCH_FRAGMENT_TAG")
+            val restaurantDetailsFragment = (holder.itemView.context as FragmentActivity).supportFragmentManager.findFragmentByTag("RESTAURANT_DETAILS_FRAGMENT_TAG")
+
+            //Add listeners to their corresponding registrations
+            if (restaurantDetailsFragment != null){
+                listenerRegistrations["restaurant"]!!.put(position, docRef.addSnapshotListener(eventListener))
+            }
+            else if (searchFragment != null){
+                listenerRegistrations["search"]!!.put(position, docRef.addSnapshotListener(eventListener))
             }
             else {
-                listenerRegistrations["search"]!!.add(position, docRef.addSnapshotListener(eventListener))
+                listenerRegistrations["main"]!!.put(position, docRef.addSnapshotListener(eventListener))
             }
         }
     }
@@ -206,15 +212,20 @@ class FoodRowAdapter() :
         super.onViewDetachedFromWindow(holder)
         //Log.d("detach", "detached")
         //remove listener for those not on screen
-        val mfragment = (holder.itemView.context as FragmentActivity).supportFragmentManager.findFragmentByTag("SEARCH_FRAGMENT_TAG")
-        //If this is main recycler, remove from main
-        if (mfragment == null){
-            if (listenerRegistrations["main"]!!.isNotEmpty() && listenerRegistrations["main"]!![holder.adapterPosition] != null)
-                listenerRegistrations["main"]!![holder.adapterPosition]!!.remove()
+        val searchFragment = (holder.itemView.context as FragmentActivity).supportFragmentManager.findFragmentByTag("SEARCH_FRAGMENT_TAG")
+        val restaurantDetailsFragment = (holder.itemView.context as FragmentActivity).supportFragmentManager.findFragmentByTag("RESTAURANT_DETAILS_FRAGMENT_TAG")
+        //Remove listeners from their respective registrations
+        if (restaurantDetailsFragment != null){
+            if (listenerRegistrations["restaurant"]!!.isNotEmpty() && listenerRegistrations["restaurant"]!![holder.adapterPosition] != null)
+                listenerRegistrations["restaurant"]!![holder.adapterPosition]!!.remove()
         }
-        else {
+        if (searchFragment != null){
             if (listenerRegistrations["search"]!!.isNotEmpty() && listenerRegistrations["search"]!![holder.adapterPosition] != null)
                 listenerRegistrations["search"]!![holder.adapterPosition]!!.remove()
+        }
+        else {
+            if (listenerRegistrations["main"]!!.isNotEmpty() && listenerRegistrations["main"]!![holder.adapterPosition] != null)
+                listenerRegistrations["main"]!![holder.adapterPosition]!!.remove()
         }
 
     }
@@ -257,6 +268,5 @@ class FoodRowAdapter() :
             notifyDataSetChanged()
         }
     }
-
 }
 

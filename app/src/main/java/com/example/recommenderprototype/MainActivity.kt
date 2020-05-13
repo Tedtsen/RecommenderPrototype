@@ -225,7 +225,6 @@ class MainActivity : AppCompatActivity() {
                                 supportFragmentManager.popBackStack()
 
                                 //First-time login and profile NOT set, so we need to add entry in user-item matrix (need foodCount for column width)
-                                val user = User()
                                 val bundle = Bundle()
                                 bundle.putParcelable("foodCount", mCountParcel)
                                 bundle.putParcelable("user", user)

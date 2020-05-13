@@ -38,8 +38,6 @@ class ProfileSettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //Need to record previous Prefer and Prefer Not as they are not saved to hint (1 bugs known not patched)
-        //ZH ENG TRANSLATION ARGHHHHHHHH!!!!
         var previousCantEatString : String = ""
         var previousPreferString : String = ""
         var previousPreferNotString : String = ""
@@ -265,10 +263,12 @@ class ProfileSettingsFragment : Fragment() {
                             initProteinWeight.joinToString (separator = ",")
                         else previousProteinWeight
 
+                        val currentUser = FirebaseAuth.getInstance().currentUser!!
                         //Set above details if no conflict
-                        odb.collection("user").document(FirebaseAuth.getInstance().currentUser!!.email!!).set(details, SetOptions.merge())
+                        odb.collection("user").document(currentUser.email!!).set(details, SetOptions.merge())
 
-                        //RMB Set details to local reference too
+                        //RMB Set details to local reference too, if user is able to come to this state, that means user already has
+                        //bookmark, history data, name, profile photo, email set, so we don't have to set anything for those attributes
                         user.gender = gender
                         user.age = age
                         user.height = height
@@ -354,14 +354,18 @@ class ProfileSettingsFragment : Fragment() {
                                     }
                                     details["protein_weight"] = initProteinWeight.joinToString (separator = ",")
 
+                                    val currentUser = FirebaseAuth.getInstance().currentUser!!
                                     //Set above details if no conflict
-                                    odb.collection("user").document(FirebaseAuth.getInstance().currentUser!!.email!!).set(details)
+                                    odb.collection("user").document(currentUser.email!!).set(details)
 
                                     //Initialise user entry in user-item matrix (get foodCount from parcel from MainActivity)
                                     val userEntry = hashMapOf("CF_score" to IntArray(foodCount){_-> 0}.joinToString(separator = ","))
-                                    odb.collection("user_item_matrix").document(FirebaseAuth.getInstance().currentUser!!.email!!).set(userEntry)
+                                    odb.collection("user_item_matrix").document(currentUser.email!!).set(userEntry)
 
                                     //RMB Set the details to local reference too
+                                    user.email = currentUser.email!!
+                                    user.google_account_profile_photo_url = currentUser.photoUrl.toString()
+                                    user.google_account_name = currentUser.displayName!!
                                     user.gender = gender
                                     user.age = age
                                     user.height = height

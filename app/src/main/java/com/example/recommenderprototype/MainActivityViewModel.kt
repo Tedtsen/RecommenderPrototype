@@ -12,6 +12,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_profile_settings.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -87,6 +89,16 @@ class MainActivityViewModel : ViewModel() {
                         //val user = User()
                         docRef.get().addOnSuccessListener { document ->
                             if (document.exists()){
+
+                                //Record last online time of user to firestore
+                                val tz = TimeZone.getTimeZone("GMT+08:00");
+                                val c = Calendar.getInstance(tz);
+                                val dateAndTime : String = c.get(Calendar.YEAR).toString()+"_"+(c.get(Calendar.MONTH)+1).toString()+"_"+c.get(
+                                    Calendar.DATE).toString()+"_"+c.get(Calendar.HOUR_OF_DAY).toString()+":"+c.get(
+                                    Calendar.MINUTE).toString()
+                                odb.collection("user").document(currentUser!!.email!!).update("last_online", dateAndTime)
+
+                                //Set user data to local reference
                                 user.email = currentUser.email.toString()
                                 user.google_account_profile_photo_url = currentUser.photoUrl.toString()
                                 user.google_account_name = currentUser.displayName.toString()

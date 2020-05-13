@@ -97,8 +97,9 @@ class WebViewFragment : Fragment(){
                     } else {
                         if (clipData != null) { // checking if multiple files selected or not
                             val numSelectedFiles = clipData.itemCount
+                            results = ArrayList()
                             for (i in 0 until clipData.itemCount) {
-                                results!!.add(clipData.getItemAt(i).uri)
+                                results.add(clipData.getItemAt(i).uri)
                             }
                         } else {
                             results = arrayListOf(Uri.parse(stringData))
@@ -238,7 +239,6 @@ class WebViewFragment : Fragment(){
                     }else intentArray = arrayOfNulls(0)
 
 
-
                     val chooserIntent = Intent(Intent.ACTION_CHOOSER)
                     chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent)
                     chooserIntent.putExtra(Intent.EXTRA_TITLE, "File chooser")
@@ -250,8 +250,6 @@ class WebViewFragment : Fragment(){
                 }
             }
         })
-
-
     }
 
     /*-- callback reporting if error occurs --*/

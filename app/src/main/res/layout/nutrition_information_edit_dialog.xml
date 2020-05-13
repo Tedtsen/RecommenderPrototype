@@ -12,7 +12,7 @@
 
         <TextView
             android:id="@+id/calorieTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:text="@string/food_details_calorie"
@@ -22,7 +22,6 @@
             android:id="@+id/calorieColon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
             android:text=":"
             android:textSize="20sp" />
 
@@ -44,7 +43,7 @@
 
         <TextView
             android:id="@+id/starchTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:text="@string/food_details_starch"
@@ -54,7 +53,7 @@
             android:id="@+id/starchColon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="19dp"
+
             android:text=":"
             android:textSize="20sp" />
 
@@ -74,7 +73,7 @@
 
         <TextView
             android:id="@+id/proteinTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:text="@string/food_details_protein"
@@ -84,7 +83,6 @@
             android:id="@+id/proteinColon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="13dp"
             android:text=":"
             android:textSize="20sp" />
 
@@ -104,7 +102,7 @@
 
         <TextView
             android:id="@+id/fatTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:text="@string/food_details_fat"
@@ -115,8 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=":"
-            android:textSize="20sp"
-            android:paddingStart="48dp"/>
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/fatEditText"
