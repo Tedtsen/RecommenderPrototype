@@ -23,6 +23,7 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -260,6 +261,8 @@ class WebViewFragment : Fragment(){
             if (url != "https://imgur.com/upload") {
                 Log.d("upload album url", url)
                 Toast.makeText(view!!.context, view!!.context.getString(R.string.food_details_image_upload_uploading), Toast.LENGTH_LONG).show()
+                val uploadProgressBar = (view!!.context as FragmentActivity).supportFragmentManager.findFragmentByTag("FOOD_DETAILS_FRAGMENT_TAG")!!.view!!.findViewById<ProgressBar>(R.id.uploadProgressBar)
+                uploadProgressBar.visibility = View.VISIBLE
                 val viewModel = ViewModelProvider((view!!.context as FragmentActivity).supportFragmentManager.findFragmentByTag("FOOD_DETAILS_FRAGMENT_TAG")!!).get(WebViewViewModel::class.java)
                 Handler().postDelayed(
                     {

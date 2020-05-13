@@ -70,6 +70,8 @@ class FoodDetailsFragment : Fragment() , LifecycleObserver{
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        uploadProgressBar.visibility = View.INVISIBLE
+
         //Imgur API
         api_key = getString(R.string.imgur_api_key)
         request_url = getString(R.string.request_url)
@@ -210,6 +212,7 @@ class FoodDetailsFragment : Fragment() , LifecycleObserver{
                 transaction.addToBackStack("WEB_VIEW_FRAGMENT_TAG")
                 transaction.commit()
 
+
                 //Wait for webView to return the album url of the image uploaded by user
                 val viewModel = ViewModelProvider(this).get(WebViewViewModel::class.java)
                 viewModel.data.observe(this, Observer {
@@ -233,9 +236,11 @@ class FoodDetailsFragment : Fragment() , LifecycleObserver{
                             odb.collection("user").document(userEmail).update("photo_upload_history", user.photo_upload_history.joinToString(separator = ","))
                             Picasso.get().load(selectedFood.imgurl).resize(180,180).centerCrop().into(detailsFoodImage)
                             Toast.makeText(this.context, getString(R.string.food_details_image_upload_success), Toast.LENGTH_SHORT).show()
+                            uploadProgressBar.visibility = View.GONE
                         }
                         else{
                             Toast.makeText(this.context, getString(R.string.food_details_image_upload_failed), Toast.LENGTH_SHORT).show()
+                            uploadProgressBar.visibility = View.GONE
                         }
                     })
                 })
@@ -306,7 +311,6 @@ class FoodDetailsFragment : Fragment() , LifecycleObserver{
         }
         asyncCaller().execute()
     }
-
 
     private fun EditText.checkIfEmpty() : Boolean{
         var isEmpty = false
