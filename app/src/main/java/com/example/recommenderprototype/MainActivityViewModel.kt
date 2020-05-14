@@ -241,7 +241,7 @@ class MainActivityViewModel : ViewModel() {
                                                 //& next user HAS rating for ith item then do prediction
                                                 if (currentUserRow[i] <= 0F && nextUser[i] > 0F) {
                                                     //Do prediction based on next user only is similarity is high
-                                                    if (sim(calcTableA, calcTableB) >= 0.6) {
+                                                    if (sim(calcTableA, calcTableB) >= 0.7) {
                                                         val simOfAB = sim(calcTableA, calcTableB)
                                                         predTop += (simOfAB * (nextUser[i] - RBmean)).toFloat()
                                                         predBtm += simOfAB

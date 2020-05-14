@@ -180,6 +180,8 @@ class ProfileSettingsFragment : Fragment() {
         val preferDialog = preferBuilder.create()
         preferTextView.setOnClickListener{preferDialog.show()}
 
+        //After setting prefer, clear prefer not textview
+
         //Prefer Not List 
         var preferNotHiddenInputString: String = ""
         var preferNotInputString: String = ""
@@ -247,6 +249,10 @@ class ProfileSettingsFragment : Fragment() {
                     val preferNotInputList = details["prefer_not"].toString().split(",")
                     if (checkIfConflict(cantEatInputList, preferInputList, preferNotInputList) == false){
 
+                        //Special case where when user selects all food in prefer, need to clear prefer not
+                        if (preferInputList.size == 9)
+
+
                         //Protein weight is calculated here to ensure no conflict
                         //First calculate initProteinWeight
                         preferListZH.forEachIndexed{ index: Int, element: String ->
@@ -303,7 +309,10 @@ class ProfileSettingsFragment : Fragment() {
                         notEmptyCheckBoxes[5] = true
                     if (preferHiddenInputString != "" || preferMultiAutoCompleteTextView.checkIfEmpty() == false)
                         notEmptyCheckBoxes[6] = true
-                    if (preferNotHiddenInputString != "" || preferNotMultiAutoCompleteTextView.checkIfEmpty() == false)
+                    //If user selects all prefer options, we set number 7 criterion, which is prefer not as true (not empty) to allow special case
+                    if (preferHiddenInputString.length >= 25)
+                        notEmptyCheckBoxes[7] = true
+                    else if (preferNotHiddenInputString != "" || preferNotMultiAutoCompleteTextView.checkIfEmpty() == false)
                         notEmptyCheckBoxes[7] = true
                     var passed = true
                    for (status in notEmptyCheckBoxes)
