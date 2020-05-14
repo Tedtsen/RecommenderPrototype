@@ -249,10 +249,6 @@ class ProfileSettingsFragment : Fragment() {
                     val preferNotInputList = details["prefer_not"].toString().split(",")
                     if (checkIfConflict(cantEatInputList, preferInputList, preferNotInputList) == false){
 
-                        //Special case where when user selects all food in prefer, need to clear prefer not
-                        if (preferInputList.size == 9)
-
-
                         //Protein weight is calculated here to ensure no conflict
                         //First calculate initProteinWeight
                         preferListZH.forEachIndexed{ index: Int, element: String ->
