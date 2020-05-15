@@ -12,6 +12,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_profile_settings.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.lang.Math.pow
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.pow
@@ -138,32 +139,64 @@ class MainActivityViewModel : ViewModel() {
 
                                 //Content - Based
                                 val staple_options = listOf<String>("飯", "麵", "餃", "餅", "湯", "麵包", "其他")
-                                val protein_options = listOf<String>("雞肉", "豬肉", "牛肉", "羊肉", "魚肉", "海鮮", "雞蛋", "蔬果", "豆腐")
-                                var staple_vec = arrayOfNulls<Float>(size = 7)
-                                var protein_vec = arrayOfNulls<Float>(size = 10)
+                                val protein_options = listOf<String>("雞肉", "豬肉", "牛肉", "羊肉", "魚肉", "海鮮", "雞蛋", "蔬果", "豆腐", "其他")
+                                //For each food in the menu
                                 for (i in 0 until menuRecommended.size){
 
-                                    //Init staple vector for every food in menu
+                                    //Init the vectors of current food
+                                    var staple_vec = arrayOfNulls<Float>(size = 7)
+                                    var protein_vec = arrayOfNulls<Float>(size = 10)
+
+                                    //Fill in the entries of staple vector for current food in menu
                                     staple_options.forEachIndexed { index, option ->
                                         if (menuRecommended[i].staple.contains(option))
                                             staple_vec[index] = 1F
                                         else staple_vec[index] = 0F
                                     }
 
-                                    //Init protein vector for every food in menu
+                                    //Fill in the entries of protein vector for current food in menu
                                     protein_options.forEachIndexed { index, option ->
                                         if (menuRecommended[i].main_ingredient.contains(option))
                                             protein_vec[index] = 1F
                                         else protein_vec[index] = 0F
                                     }
+                                    //Special cases for protein
+                                    if (menuRecommended[i].main_ingredient.contains("蝦肉"))
+                                        protein_vec[5] = 1F
+                                    else if (menuRecommended[i].main_ingredient.contains("鷄肉"))
+                                        protein_vec[0] = 1F
 
+                                    //If doesn't contain user cant eat items (score will be >= 0)
                                     if (CB_score[i]!! >= 0){
+
+                                        //Staple, need to normalise by doing (w1*v1) / [Len(w1)*Len(v1)]
+                                        val w1 = user.staple_weight
+                                        val v1 = staple_vec.toMutableList()
+                                        val divisor1 = vectorLength(w1)*vectorLength(v1 as MutableList<Float>)
+                                        var dividend1 = 0F
                                         for (j in 0 until staple_options.size){
-                                            CB_score[i] = CB_score[i]?.plus(user.staple_weight[j]*staple_vec[j]!!)
+                                            //CB_score[i] = CB_score[i]?.plus(user.staple_weight[j]*staple_vec[j])
+                                            dividend1 += w1[j]*v1[j]
                                         }
+                                        val normalisedStaple = dividend1/divisor1
+
+                                        //Main ingredients, need to normalise by doing (w2*v2) / [Len(w2)*Len(v2)]
+                                        val w2 = user.protein_weight
+                                        val v2 = protein_vec.toMutableList()
+                                        val divisor2 = vectorLength(w2)*vectorLength(v2 as MutableList<Float>)
+                                        var dividend2 = 0F
                                         for (k in 0 until protein_options.size){
-                                            CB_score[i] = CB_score[i]?.plus(user.protein_weight[k]*protein_vec[k]!!)
+                                            //CB_score[i] = CB_score[i]?.plus(user.protein_weight[k]*protein_vec[k])
+                                            dividend2 += w2[k]*v2[k]
                                         }
+                                        val normalisedProtein = dividend2/divisor2
+
+                                        //Add up the two parts, then divide by 2 to limit the range to 0~1
+                                        //Take care of cases where main ingredients are not recorded, because normalisedStaple + NaN = Nan
+                                        if (normalisedProtein.isNaN() == false)
+                                            CB_score[i] = ( normalisedStaple + normalisedProtein )/2
+                                        else CB_score[i] = normalisedStaple/2
+                                        //Log.d("CB_score", menuRecommended[i].name + " " + menuRecommended[i].staple.toString() + " " + normalisedStaple.toString() +" "+ menuRecommended[i].main_ingredient.toString() + " " +normalisedProtein.toString()+" "+CB_score[i].toString())
                                     }
                                 }
 
@@ -249,8 +282,9 @@ class MainActivityViewModel : ViewModel() {
                                                 }
                                             }
                                             //Only update prediction for current user non-rated items (<= 0)
+                                            //Divide by 5 to do normalisation
                                             if (currentUserRow[i] <= 0){
-                                                prediction[i] = (RAmean + predTop/predBtm).toFloat()
+                                                prediction[i] = (RAmean + predTop/predBtm).toFloat() / 5
                                             }
                                         }
                                     }
@@ -259,6 +293,7 @@ class MainActivityViewModel : ViewModel() {
                                 for (i in 0 until menuRecommended.size){
                                     if (CB_score[i]!! >= 0F)
                                     menuRecommended[i].score = ( 0.7*CB_score[i]!! + 0.3*prediction[i]!! ).toFloat()
+                                    //Log.d("final_score", menuRecommended[i].name + " " + menuRecommended[i].staple.toString() + " " + menuRecommended[i].main_ingredient.toString() + " " +menuRecommended[i].score.toString())
                                 }
                                 menuRecommended.sortByDescending { it.score }
                             }
@@ -327,5 +362,13 @@ class MainActivityViewModel : ViewModel() {
             }
         }
         return top/sqrt(btmA*btmB)
+    }
+
+    fun vectorLength(vector : MutableList<Float>) : Float{
+        var squaredSum = 0F
+        vector.forEach {
+            squaredSum += pow(it.toDouble(), 2.0).toFloat()
+        }
+        return sqrt(squaredSum)
     }
 }
