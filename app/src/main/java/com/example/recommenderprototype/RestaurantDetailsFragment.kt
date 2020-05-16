@@ -69,9 +69,6 @@ class RestaurantDetailsFragment : Fragment() {
 
         val filteredMenu = menu.filter { it.restaurant_id == selectedRestaurant.restaurant_id}
         val madapter = FoodRowAdapter(menu, user, restaurantList, listToApply = filteredMenu as ArrayList<Food>)
-        madapter.setHasStableIds(true)
-        restaurantMenuRecyclerView.setHasFixedSize(true)
-        restaurantMenuRecyclerView.setItemViewCacheSize(20)
         restaurantMenuRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = madapter
