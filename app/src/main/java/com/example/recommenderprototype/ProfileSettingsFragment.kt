@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import com.example.recommenderprototype.database.User
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.fragment_profile_settings.*
@@ -217,7 +218,7 @@ class ProfileSettingsFragment : Fragment() {
                 dialog.show()
             else Toast.makeText(context, getString(R.string.profile_settings_set_preferred_first), Toast.LENGTH_LONG).show()
         }
-        
+
         /* Submission : 2 parts */
         submitProfileSettingsButton.setOnClickListener{
 
@@ -367,10 +368,28 @@ class ProfileSettingsFragment : Fragment() {
                                     val userEntry = hashMapOf("CF_score" to IntArray(foodCount){_-> 0}.joinToString(separator = ","))
                                     odb.collection("user_item_matrix").document(currentUser.email!!).set(userEntry)
 
+                                    //Get google provider data
+                                    //Sometimes currentUser.displayName returns null and causes the app to crash, get data directly from auth provider (Google)
+                                    //If Google doesn't have it, take from firebase,
+                                    //If that fails, don't set anything and use default
+                                    currentUser.let{
+                                        for (profile in it.providerData){
+                                            if (profile.providerId == GoogleAuthProvider.PROVIDER_ID) {
+                                                Log.d("google user", profile.photoUrl.toString() + " " + profile.displayName)
+                                                Log.d("firebase user", currentUser.photoUrl.toString() + " " + currentUser.displayName)
+                                                if (profile.photoUrl != null && profile.displayName != null){
+                                                    user.google_account_profile_photo_url = profile.photoUrl.toString()
+                                                    user.google_account_name = profile.displayName!!
+                                                }
+                                                else if (currentUser.photoUrl != null && currentUser.displayName != null){
+                                                    user.google_account_profile_photo_url = currentUser.photoUrl.toString()
+                                                    user.google_account_name = currentUser.displayName!!
+                                                }
+                                            }
+                                        }
+                                    }
                                     //RMB Set the details to local reference too
                                     user.email = currentUser.email!!
-                                    user.google_account_profile_photo_url = currentUser.photoUrl.toString()
-                                    user.google_account_name = currentUser.displayName!!
                                     user.gender = gender
                                     user.age = age
                                     user.height = height

@@ -23,6 +23,7 @@ import com.example.recommenderprototype.database.User
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.content_main.*
@@ -187,9 +188,27 @@ class MainActivity : AppCompatActivity() {
                                         food.bookmark = true
                                 }
 
+                                //Get google provider data
+                                //Sometimes currentUser.displayName returns null and causes the app to crash, get data directly from auth provider (Google)
+                                //If Google doesn't have it, take from firebase,
+                                //If that fails, don't set anything and use default
+                                currentUser.let{
+                                    for (profile in it.providerData){
+                                        if (profile.providerId == GoogleAuthProvider.PROVIDER_ID) {
+                                            Log.d("google user", profile.photoUrl.toString() + " " + profile.displayName)
+                                            Log.d("firebase user", currentUser.photoUrl.toString() + " " + currentUser.displayName)
+                                            if (profile.photoUrl != null && profile.displayName != null){
+                                                user.google_account_profile_photo_url = profile.photoUrl.toString()
+                                                user.google_account_name = profile.displayName!!
+                                            }
+                                            else if (currentUser.photoUrl != null && currentUser.displayName != null){
+                                                user.google_account_profile_photo_url = currentUser.photoUrl.toString()
+                                                user.google_account_name = currentUser.displayName!!
+                                            }
+                                        }
+                                    }
+                                }
                                 user.email = currentUser.email.toString()
-                                user.google_account_profile_photo_url = currentUser.photoUrl.toString()
-                                user.google_account_name = currentUser.displayName.toString()
                                 user.gender = document["gender"].toString()
                                 user.age = document["age"].toString().toInt()
                                 user.height = document["height"].toString().toInt()

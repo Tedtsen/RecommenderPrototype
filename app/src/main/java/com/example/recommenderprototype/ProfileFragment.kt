@@ -61,7 +61,9 @@ class ProfileFragment : Fragment() {
 
         if (user.google_account_profile_photo_url != "")
             Picasso.get().load(user.google_account_profile_photo_url).resize(512, 512).centerCrop().into(userPhotoImageView)
-        usernameTextView.text = user.google_account_name
+        if (user.google_account_name != "")
+            usernameTextView.text = user.google_account_name
+        else usernameTextView.text = user.email
 
         logoutButton.setOnClickListener {
             AuthUI.getInstance().signOut(this.context!!).addOnSuccessListener {
