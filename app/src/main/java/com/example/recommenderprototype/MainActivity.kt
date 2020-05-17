@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.menu_search -> {
                     val mFragment = supportFragmentManager.findFragmentByTag("SEARCH_FRAGMENT_TAG")
-                    if (mFragment == null) {
+                    if (mFragment == null && progressBar2.visibility == View.GONE) {
                         supportFragmentManager.popBackStack()
                         val bundle = Bundle()
                         bundle.putParcelable("menu", mListsParcel)
@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity() {
                     //Check if logged in
                     auth = FirebaseAuth.getInstance()
                     val currentUser = auth.currentUser
-                    if (currentUser == null){
+                    if (currentUser == null && progressBar2.visibility == View.GONE){
                         //if not logged in, go to Google sign-in (check onActivity Result)
                     startActivityForResult(AuthUI.getInstance()
                         .createSignInIntentBuilder()
@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity() {
                     else {
                         //if logged in (goto profile page)
                         val mFragment = supportFragmentManager.findFragmentByTag("PROFILE_FRAGMENT_TAG")
-                        if (mFragment == null) {
+                        if (mFragment == null && progressBar2.visibility == View.GONE) {
                             val bundle = Bundle()
                             bundle.putParcelable("listOfLists", mListsParcel)
                             bundle.putParcelable("user", user)
