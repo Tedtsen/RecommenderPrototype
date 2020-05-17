@@ -164,9 +164,9 @@ class FoodRowAdapter() :
                 EventListener { snapshot, e ->
                     if (snapshot != null && snapshot.exists()) {
                         //Do what you need to do
-                        Log.d("snapshot listener", "Current data: ${snapshot.data}")
+                        //Log.d("snapshot listener", "Current data: ${snapshot.data}")
                         //For the case of search fragment, out of bound will occur
-                        Log.d("menu size and postion", menu.size.toString() + " " + position.toString())
+                        //Log.d("menu size and postion", menu.size.toString() + " " + position.toString())
                         if (position < menu.size) {
                             menu[position].imgurl = snapshot.toObject(Food::class.java)!!.imgurl
                             menu[position].calorie = snapshot.toObject(Food::class.java)!!.calorie

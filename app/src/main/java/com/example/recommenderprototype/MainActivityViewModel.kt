@@ -302,7 +302,8 @@ class MainActivityViewModel : ViewModel() {
                                             //Only update prediction for current user non-rated items (<= 0)
                                             //Divide by 5 to do normalisation
                                             if (currentUserRow[i] <= 0){
-                                                prediction[i] = (RAmean + predTop/predBtm).toFloat() / 5
+                                                if (predTop > 0 && predBtm > 0)
+                                                    prediction[i] = (RAmean + predTop/predBtm).toFloat() / 5
                                             }
                                             else{
                                                 prediction[i] = currentUserRow[i] / 5
