@@ -304,6 +304,9 @@ class MainActivityViewModel : ViewModel() {
                                             if (currentUserRow[i] <= 0){
                                                 prediction[i] = (RAmean + predTop/predBtm).toFloat() / 5
                                             }
+                                            else{
+                                                prediction[i] = currentUserRow[i] / 5
+                                            }
                                         }
                                     }
 
