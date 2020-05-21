@@ -56,8 +56,9 @@ class MainActivityViewModel : ViewModel() {
                     }
 
                     /*-- Get Bookmark Data --*/
+                    //Removed for performance
                     val currentUser = FirebaseAuth.getInstance().currentUser
-                    if (currentUser != null) {
+                    /*if (currentUser != null) {
                         //Get user document to check for bookmark
                         val odb = FirebaseFirestore.getInstance()
                         val docRef = odb.collection("user").document(currentUser.email!!)
@@ -77,11 +78,10 @@ class MainActivityViewModel : ViewModel() {
                                 }
                             }
                         }
-                    }
+                    }*/
 
                     //Create different categories of menus (Extras menu with filter please the code after recommendation algorithm)
                     var menuRecommended : ArrayList<Food> = menu.toCollection(ArrayList<Food>())
-                    var menuPopular = menu.toCollection(ArrayList<Food>())
 
                     /*-- Get User Data and Perform Algorithm --*/
                     //Check if logged in
@@ -327,8 +327,8 @@ class MainActivityViewModel : ViewModel() {
                     }
 
                     //Popular
-                    menuPopular.sortByDescending { it.clicks }
-                    listOfLists.add(menuPopular)
+                    menu.sortByDescending { it.clicks }
+                    listOfLists.add(menu)
 
                     //Recommended
                     listOfLists.add(menuRecommended)
@@ -379,7 +379,6 @@ class MainActivityViewModel : ViewModel() {
                 .addOnFailureListener { exception ->
                     Log.d("User", "Exception " + exception)
                 }
-
         }
     }
 

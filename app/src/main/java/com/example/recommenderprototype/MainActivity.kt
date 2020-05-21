@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         val runnable = Runnable() {
             kotlin.run { dialog.dismiss() }
         }
-        handler.postDelayed(runnable, 3000)
+        handler.postDelayed(runnable, 10000)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         mViewModel.mUserLiveData.observe(this, Observer {
             user = mViewModel.mUserLiveData.value!!
 
-            //Oberserve if all restaurant data is obtained
+            //Observe if all restaurant data is obtained
             mViewModel.mRestaurantListLiveData.observe(this, Observer {
                 mRestaurantListParcel.restaurantList = mViewModel.mRestaurantListLiveData.value!!
 
