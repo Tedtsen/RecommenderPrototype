@@ -129,7 +129,7 @@ class FoodRowAdapter() :
             }
 
             //Increase the "clicks" field of the selected food
-            odb.collection("food_test").document(menu[position].menu_id).update("clicks", FieldValue.increment(1))
+            odb.collection("food").document(menu[position].menu_id).update("clicks", FieldValue.increment(1))
 
             //Bundle
             val bundle = Bundle()
@@ -159,7 +159,7 @@ class FoodRowAdapter() :
         //Attach listener to document reference and we register it, so listener can be removed when view is detached
         val docName : String? = menu[position].menu_id
         if (docName != "" && docName != null) {
-            val docRef = odb.collection("food_test").document(docName)
+            val docRef = odb.collection("food").document(docName)
             val eventListener: EventListener<DocumentSnapshot> =
                 EventListener { snapshot, e ->
                     if (snapshot != null && snapshot.exists()) {

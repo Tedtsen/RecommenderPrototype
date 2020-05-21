@@ -189,7 +189,7 @@ class FoodDetailsFragment : Fragment() , LifecycleObserver{
                         user.nutrition_edit_history.add(editHistoryRecord)
                         odb.collection("user").document(userEmail).update("nutrition_edit_history", user.nutrition_edit_history.joinToString(separator = ","))
 
-                        odb.collection("food_test").document(selectedFood.menu_id).update(
+                        odb.collection("food").document(selectedFood.menu_id).update(
                             "calorie" , selectedFood.calorie,
                             "starch" , selectedFood.starch,
                             "protein" , selectedFood.protein,
@@ -232,7 +232,7 @@ class FoodDetailsFragment : Fragment() , LifecycleObserver{
                         if (imageUrl != null){
                             selectedFood.imgurl = imageUrl
                             user.photo_upload_history.add(selectedFood.menu_id+"/"+selectedFood.imgurl)
-                            odb.collection("food_test").document(selectedFood.menu_id).update("imgurl", selectedFood.imgurl)
+                            odb.collection("food").document(selectedFood.menu_id).update("imgurl", selectedFood.imgurl)
                             odb.collection("user").document(userEmail).update("photo_upload_history", user.photo_upload_history.joinToString(separator = ","))
                             Picasso.get().load(selectedFood.imgurl).resize(180,180).centerCrop().into(detailsFoodImage)
                             Toast.makeText(this.context, getString(R.string.food_details_image_upload_success), Toast.LENGTH_SHORT).show()

@@ -44,7 +44,7 @@ class MainActivityViewModel : ViewModel() {
                 }
 
             //Firestore food database read function
-            odb.collection("food_test").get()
+            odb.collection("food").get()
                 .addOnSuccessListener { results ->
 
                     /*-- Populate Menu --*/
@@ -337,25 +337,39 @@ class MainActivityViewModel : ViewModel() {
                     listOfLists.add(menu.filter { it-> it.calorie > 0 || it.starch > 0 || it.protein > 0 || it.fat > 0 } as ArrayList<Food>)
 
                     //Rice
-                    listOfLists.add(menu.filter { it-> it.staple == "飯" } as ArrayList<Food>)
+                    if (menuRecommended[0].name != "Login to view!")
+                        listOfLists.add(menuRecommended.filter { it-> it.staple == "飯" } as ArrayList<Food>)
+                    else listOfLists.add(menu.filter { it-> it.staple == "飯" } as ArrayList<Food>)
 
                     //Noodle
-                    listOfLists.add(menu.filter { it-> it.staple == "麵" } as ArrayList<Food>)
+                    if (menuRecommended[0].name != "Login to view!")
+                        listOfLists.add(menuRecommended.filter { it-> it.staple == "麵" } as ArrayList<Food>)
+                    else listOfLists.add(menu.filter { it-> it.staple == "麵" } as ArrayList<Food>)
 
                     //Dumpling
-                    listOfLists.add(menu.filter { it-> it.staple == "餃" } as ArrayList<Food>)
+                    if (menuRecommended[0].name != "Login to view!")
+                        listOfLists.add(menuRecommended.filter { it-> it.staple == "餃" } as ArrayList<Food>)
+                    else listOfLists.add(menu.filter { it-> it.staple == "餃" } as ArrayList<Food>)
 
                     //Biscuit
-                    listOfLists.add(menu.filter { it-> it.staple == "餅" } as ArrayList<Food>)
+                    if (menuRecommended[0].name != "Login to view!")
+                        listOfLists.add(menuRecommended.filter { it-> it.staple == "餅" } as ArrayList<Food>)
+                    else listOfLists.add(menu.filter { it-> it.staple == "餅" } as ArrayList<Food>)
 
                     //Soup
-                    listOfLists.add(menu.filter { it-> it.staple == "湯" } as ArrayList<Food>)
+                    if (menuRecommended[0].name != "Login to view!")
+                        listOfLists.add(menuRecommended.filter { it-> it.staple == "湯" } as ArrayList<Food>)
+                    else listOfLists.add(menu.filter { it-> it.staple == "湯" } as ArrayList<Food>)
 
                     //Bread
-                    listOfLists.add(menu.filter { it-> it.staple == "麵包" } as ArrayList<Food>)
+                    if (menuRecommended[0].name != "Login to view!")
+                        listOfLists.add(menuRecommended.filter { it-> it.staple == "麵包" } as ArrayList<Food>)
+                    else listOfLists.add(menu.filter { it-> it.staple == "麵包" } as ArrayList<Food>)
 
                     //Other
-                    listOfLists.add(menu.filter { it-> it.staple == "其他" } as ArrayList<Food>)
+                    if (menuRecommended[0].name != "Login to view!")
+                        listOfLists.add(menuRecommended.filter { it-> it.staple == "其他" } as ArrayList<Food>)
+                    else listOfLists.add(menu.filter { it-> it.staple == "其他" } as ArrayList<Food>)
 
                     //PostValue is used to tell main activity this thread is done and return the lists
                     mLiveData.postValue(listOfLists)
