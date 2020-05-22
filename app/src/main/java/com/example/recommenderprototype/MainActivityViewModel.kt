@@ -10,7 +10,6 @@ import com.example.recommenderprototype.database.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.android.synthetic.main.fragment_profile_settings.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.Math.pow
@@ -26,7 +25,6 @@ class MainActivityViewModel : ViewModel() {
     val user = User()
 
     fun fetchData() {
-
         viewModelScope.launch(Dispatchers.Default) {
 
             val odb: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -56,9 +54,8 @@ class MainActivityViewModel : ViewModel() {
                     }
 
                     /*-- Get Bookmark Data --*/
-                    //Removed for performance
                     val currentUser = FirebaseAuth.getInstance().currentUser
-                    /*if (currentUser != null) {
+                    if (currentUser != null) {
                         //Get user document to check for bookmark
                         val odb = FirebaseFirestore.getInstance()
                         val docRef = odb.collection("user").document(currentUser.email!!)
@@ -78,7 +75,7 @@ class MainActivityViewModel : ViewModel() {
                                 }
                             }
                         }
-                    }*/
+                    }
 
                     //Create different categories of menus (Extras menu with filter please the code after recommendation algorithm)
                     var menuRecommended : ArrayList<Food> = menu.toCollection(ArrayList<Food>())
@@ -188,26 +185,20 @@ class MainActivityViewModel : ViewModel() {
                                     if (CB_score[i]!! >= 0){
 
                                         //Staple, need to normalise by doing (w1*v1) / [Len(w1)*Len(v1)]
-                                        val w1 = user.staple_weight
-                                        val v1 = staple_vec.toMutableList()
-                                        val divisor1 = vectorLength(w1)*vectorLength(v1 as MutableList<Float>)
                                         var dividend1 = 0F
                                         for (j in 0 until staple_options.size){
                                             //CB_score[i] = CB_score[i]?.plus(user.staple_weight[j]*staple_vec[j])
-                                            dividend1 += w1[j]*v1[j]
+                                            dividend1 += user.staple_weight[j]*staple_vec[j]!!
                                         }
-                                        val normalisedStaple = dividend1/divisor1
+                                        val normalisedStaple = dividend1/ ( vectorLength(user.staple_weight)*vectorLength(staple_vec.toMutableList() as MutableList<Float>) )
 
                                         //Main ingredients, need to normalise by doing (w2*v2) / [Len(w2)*Len(v2)]
-                                        val w2 = user.protein_weight
-                                        val v2 = protein_vec.toMutableList()
-                                        val divisor2 = vectorLength(w2)*vectorLength(v2 as MutableList<Float>)
                                         var dividend2 = 0F
                                         for (k in 0 until protein_options.size){
                                             //CB_score[i] = CB_score[i]?.plus(user.protein_weight[k]*protein_vec[k])
-                                            dividend2 += w2[k]*v2[k]
+                                            dividend2 += user.protein_weight[k]*protein_vec[k]!!
                                         }
-                                        val normalisedProtein = dividend2/divisor2
+                                        val normalisedProtein = dividend2/ ( vectorLength(user.protein_weight)*vectorLength(protein_vec.toMutableList() as MutableList<Float>) )
 
                                         //Add up the two parts, then divide by 2 to limit the range to 0~1
                                         //Take care of cases where main ingredients are not recorded, because normalisedStaple + NaN = Nan
@@ -248,44 +239,36 @@ class MainActivityViewModel : ViewModel() {
                                         //Calculate usera average of nonzero elements
                                         val currentUserRowNonZero = currentUserRow.filter { it > 0F }
                                         val RAmean  = currentUserRowNonZero.average()
-                                        //Log.d("prediction", "mean of A is " + RAmean)
 
+                                        //Optimised
                                         //Columns: (rai-ramean) | (rai-ramean)^2
-                                        var calcTableA = mutableListOf(mutableListOf<Float>(),mutableListOf<Float>())
+                                        var calcTableA = mutableListOf(arrayOfNulls<Float>(menu.size),arrayOfNulls<Float>(menu.size))
                                         for (i in 0 until menu.size){
-                                            //As we need to find co-rated items, non-rated are labelled -100
-                                            var value = -100F
+                                            //As we need to find co-rated items, non-rated are labelled null by default
                                             if (currentUserRow[i] > 0F) {
-                                                value = (currentUserRow[i]-RAmean).toFloat()
+                                                calcTableA[0][i] = (currentUserRow[i]-RAmean).toFloat()
+                                                calcTableA[1][i] = (currentUserRow[i]-RAmean).toFloat().pow(2)
                                             }
-                                            calcTableA[0].add(value)
-                                            calcTableA[1].add(if (value > -50F) value.pow(2) else value)
                                         }
 
                                         for (i in 0 until menu.size) {
                                             //Prediction equation top & bottom
                                             var predTop = 0F
                                             var predBtm = 0F
+                                            val calcTableB = mutableListOf(arrayOfNulls<Float>(menu.size), arrayOfNulls<Float>(menu.size))
+
                                             userItemMatrix.forEachIndexed { index, nextUser ->
 
                                                 //For every other user in the matrix, calculate its mean and table
                                                 val nextUserNonZero = nextUser.filter { it > 0F }
-                                                val RBmean = nextUserNonZero.average()
 
-                                                //Columns: (rbi-rbmean) | (rbi-rbmean)^2
-                                                var calcTableB = mutableListOf(mutableListOf<Float>(),mutableListOf<Float>())
+                                                //Optimised
                                                 for (i in 0 until menu.size) {
-                                                    //As we need to find co-rated items, non-rated are labelled -100
-                                                    var value = -100F
+                                                    //As we need to find co-rated items, non-rated are labelled null by default
                                                     if (nextUser[i] > 0F) {
-                                                        value = (nextUser[i] - RBmean).toFloat()
+                                                        calcTableB[0][i] = (nextUser[i] - nextUserNonZero.average()).toFloat()
+                                                        calcTableB[1][i] = (nextUser[i] - nextUserNonZero.average()).toFloat().pow(2)
                                                     }
-                                                    calcTableB[0].add(value)
-                                                    calcTableB[1].add(
-                                                        if (value > -50F) value.pow(
-                                                            2
-                                                        ) else value
-                                                    )
                                                 }
 
                                                 //If current user has NO rating for ith item
@@ -293,9 +276,9 @@ class MainActivityViewModel : ViewModel() {
                                                 if (currentUserRow[i] <= 0F && nextUser[i] > 0F) {
                                                     //Do prediction based on next user only is similarity is high
                                                     if (sim(calcTableA, calcTableB) >= 0.7) {
-                                                        val simOfAB = sim(calcTableA, calcTableB)
-                                                        predTop += (simOfAB * (nextUser[i] - RBmean)).toFloat()
-                                                        predBtm += simOfAB
+                                                        //val simOfAB = sim(calcTableA, calcTableB)
+                                                        predTop += (sim(calcTableA, calcTableB) * (nextUser[i] - nextUserNonZero.average())).toFloat()
+                                                        predBtm += sim(calcTableA, calcTableB)
                                                     }
                                                 }
                                             }
@@ -382,7 +365,7 @@ class MainActivityViewModel : ViewModel() {
         }
     }
 
-    fun sim(userA : MutableList<MutableList<Float>> , userB : MutableList<MutableList<Float>>)  : Float {
+    fun sim(userA: MutableList<Array<Float?>>, userB: MutableList<Array<Float?>>)  : Float {
         var top = 0F
         var btmA = 0F
         var btmB = 0F
@@ -390,10 +373,10 @@ class MainActivityViewModel : ViewModel() {
         {
             //Check if greater than -50F, if lesser than -50F then it is (non-rated)
             //If userA ith item is rated && userB as well, calculate top and bottom of equation
-            if (userA[0][i] > -50F && userB[0][i] > -50F) {
-                top += userA[0][i] * userB[0][i]
-                btmA += userA[1][i]
-                btmB += userB[1][i]
+            if (userA[0][i] != null && userB[0][i] != null) {
+                top += userA[0][i]!! * userB[0][i]!!
+                btmA += userA[1][i]!!
+                btmB += userB[1][i]!!
             }
         }
         return top/sqrt(btmA*btmB)
