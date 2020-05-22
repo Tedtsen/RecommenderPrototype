@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         val runnable = Runnable() {
             kotlin.run { dialog.dismiss() }
         }
-        handler.postDelayed(runnable, 10000)
+        handler.postDelayed(runnable, 5000)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
