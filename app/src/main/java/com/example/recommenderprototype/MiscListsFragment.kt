@@ -34,5 +34,6 @@ class MiscListsFragment : Fragment(){
                 adapter = FoodRowAdapter(originalList, user, restaurantList, listToApply = listToApply)
             else adapter = FoodRowAdapter()
         }
+        arguments!!.clear()
     }
 }

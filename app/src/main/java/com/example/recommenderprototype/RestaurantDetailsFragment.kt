@@ -73,6 +73,7 @@ class RestaurantDetailsFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = madapter
         }
+        arguments!!.clear()
     }
 
     fun getGoogleMapsListener(): DialogInterface.OnClickListener {

@@ -54,6 +54,7 @@ class SearchFragment : Fragment() {
             }
 
         })
+        arguments!!.clear()
     }
 }
 

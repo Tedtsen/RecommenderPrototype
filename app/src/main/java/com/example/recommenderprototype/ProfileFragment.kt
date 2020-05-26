@@ -160,5 +160,6 @@ class ProfileFragment : Fragment() {
             }
             builder.show()
         }
+        arguments!!.clear()
     }
 }

@@ -267,6 +267,7 @@ class FoodDetailsFragment : Fragment() , LifecycleObserver{
         mainIngredientsListView.apply {
             adapter = ArrayAdapter(this.context, android.R.layout.simple_list_item_1, selectedFood.main_ingredient.chunked(size = 2))
         }
+        arguments!!.clear()
     }
 
     private fun requestAlbumInfo(request_url : URL){
